@@ -8,7 +8,7 @@ MM_PER_STEPS = 0.298
 
 pi = pigpio.pi()
 pi.set_PWM_frequency(20, 200)
-def drive(speed):
+def drive(speed): # 0-255
     if speed > 0:
         pi.set_PWM_dutycycle(20, 255-speed)
         pi.set_PWM_dutycycle(21, 255)
@@ -41,6 +41,13 @@ def drive_dir(gpio, level, tick):
         pin6_level = True 
     elif level == 0:
         pin6_level = False 
+
+def steer_p(dir, curr_angle, speed):
+    error = curr_angle - dir
+    gain = -1 
+    correction = error * gain 
+    steering(correction)
+    drive(speed)
 
 class Gyro: 
     # can use a separate microcontroller (eg. ESP-32) to 
@@ -134,37 +141,28 @@ class Compass:
 cb1 = pi.callback(5, pigpio.RISING_EDGE, step_count)
 cb2 = pi.callback(6, pigpio.EITHER_EDGE, drive_dir)
 
-# gyro = Gyro() #initialise class
-compass = Compass()
+gyro = Gyro() #initialise class
+gyro.calibration()
+# compass = Compass()
 print_time = time.time() + 0.5
-lx, ly = 389, 520
-mx, my = -416, -445
+# LX, LY = 389, 520
+# MX, MY = -416, -445
 while True:
-    print(compass.heading())
-    ## Finding min 
-    # if d[0] > lx:
-    #     lx = d[0]
-    # elif d[0] < mx:
-    #     mx = d[0]
-    # if d[2] > ly:
-    #     ly = d[2]
-    # elif d[2] < my:
-    #     my = d[2]
-    # print(lx, ly)
-    # print(mx, my)
-    # gyro.update_angle()
-    # if time.time() > print_time:
-    #     print(gyro.angle_z())
-    #     print_time = time.time() + 0.5 
-    time.sleep(0.1)
+    gyro.update_angle()
+    if time.time() > print_time:
+        print(gyro.angle_z())
+        print_time = time.time() + 0.5 
+    
+    steer_p(45, gyro.angle_z(), 120)
 
     
 
-# drive(100)
-# time.sleep(20)
-# drive(0)
-# print(steps)
-# drive(-100)
-# time.sleep(2)
-# drive(0)
-# print(steps)
+## -------- Finding min and max compass angle -------- ##
+# if d[0] > lx:
+#     lx = d[0]
+# elif d[0] < mx:
+#     mx = d[0]
+# if d[2] > ly:
+#     ly = d[2]
+# elif d[2] < my:
+#     my = d[2]
