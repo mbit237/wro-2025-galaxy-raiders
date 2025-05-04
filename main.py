@@ -3,11 +3,15 @@ import time
 import struct
 import smbus
 import math 
+import lidar
 
-MM_PER_STEPS = 0.298 
+MM_PER_STEPS = 0.296
 
 pi = pigpio.pi()
 pi.set_PWM_frequency(20, 200)
+ldr = lidar.LDS02RR(pi)
+
+
 def drive(speed): # 0-255
     if speed > 0:
         pi.set_PWM_dutycycle(20, 255-speed)
@@ -22,18 +26,18 @@ def steering(dir):
     elif dir > 45:
         dir = 45
     pulse_duration = 1400 + (80 / 9) *(dir + 45) - 400
-    pi.set_servo_pulsewidth(14, pulse_duration)
+    pi.set_servo_pulsewidth(23, pulse_duration)
 
 steps = 0
 pin6_level = False
 
 def step_count(gpio, level, tick):
     global steps
-    # if pin6_level:
-    #     steps -= 1
-    # else:
-        # steps += 1
-    steps += 1
+    if pin6_level:
+        steps -= 1
+    else:
+        steps += 1
+    # steps += 1
 
 def drive_dir(gpio, level, tick):
     global pin6_level 
@@ -44,10 +48,17 @@ def drive_dir(gpio, level, tick):
 
 def steer_p(dir, curr_angle, speed):
     error = curr_angle - dir
-    gain = -1 
+    gain = 2 
     correction = error * gain 
     steering(correction)
     drive(speed)
+
+def steer_p_back(dir, curr_angle, speed):
+    error = curr_angle - dir
+    gain = -2 
+    correction = error * gain 
+    steering(correction)
+    drive(-speed)
 
 class Gyro: 
     # can use a separate microcontroller (eg. ESP-32) to 
@@ -74,7 +85,7 @@ class Gyro:
 
     def calibration(self):
         sum_z = 0 
-        for x in range(100):
+        for x in range(50):
             sum_z += self.rate_z()
             time.sleep(0.1)
         return sum_z/100
@@ -114,13 +125,13 @@ class Compass:
     
     def init_device(self):
         self.bus = smbus.SMBus(1)
-        self.bus.write_byte_data(self.addr, 0x00, 0b01111000)
+        self.bus.write_byte_data(self.addr, 0x00, 0b01111000) # --> check what is this value
         self.bus.write_byte_data(self.addr, 0x01, self.scale << 5) # << shift the bits to the left by 5
         # continuous mode, normal speed I2C
-        self.bus.write_byte_data(self.addr, 0x02, 0b00000000)
+        self.bus.write_byte_data(self.addr, 0x02, 0b00000000) # --> check what is this value
 
     def read(self):
-        data = self.bus.read_i2c_block_data(self.addr, 0x03, 6) # start from 03 then go to the next 6 bytes 
+        data = self.bus.read_i2c_block_data(self.addr, 0x03, 6) # start from register 03 then go to the next 6 bytes 
         return struct.unpack('>hhh', bytes(data)) # big endian, small h means it is positive or negative 
     
     def heading(self):
@@ -134,27 +145,36 @@ class Compass:
         return deg
 
 
-    
-
 # ------------------------Main-------------------------- #
 
 cb1 = pi.callback(5, pigpio.RISING_EDGE, step_count)
 cb2 = pi.callback(6, pigpio.EITHER_EDGE, drive_dir)
 
-gyro = Gyro() #initialise class
-gyro.calibration()
-# compass = Compass()
-print_time = time.time() + 0.5
+# gyro = Gyro() #initialise class
+# gyro.calibration()
+# # compass = Compass()
+print_time = time.time() + 2
 # LX, LY = 389, 520
 # MX, MY = -416, -445
+stop_time = time.time() + 10
 while True:
-    gyro.update_angle()
-    if time.time() > print_time:
-        print(gyro.angle_z())
-        print_time = time.time() + 0.5 
-    
-    steer_p(45, gyro.angle_z(), 120)
+    ldr.update()
 
+    if time.time() > print_time:
+        print(ldr.get_distances())
+        print_time = time.time() + 2
+    # gyro.update_angle()
+    # if time.time() > print_time:
+    #     print(gyro.angle_z())
+    #     print(steps)
+    #     print_time = time.time() + 0.5 
+    # steer_p(0, gyro.angle_z(), 200)
+
+    # if time.time() > stop_time:
+    #     break
+
+steer_p(0, 0, 0)
+print(steps)
     
 
 ## -------- Finding min and max compass angle -------- ##
@@ -166,3 +186,7 @@ while True:
 #     ly = d[2]
 # elif d[2] < my:
 #     my = d[2]
+
+
+# Close handle 
+# pi.close() -- check 
