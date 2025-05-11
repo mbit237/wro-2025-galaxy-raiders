@@ -1,3 +1,4 @@
+import serial
 import struct
 
 MEASUREMENT_SYNC = 0xFA
@@ -6,31 +7,29 @@ STRENGTH_WARNING = 1
 
 class LDS02RR:
     def __init__(self, pi):
-        self.uart = pi.serial_open('/dev/ttyS0', 115200)
-        self.pi = pi
+        self.uart = serial.Serial('/dev/ttyS0', 115200, timeout=0)
         self.distances = [-1] * 360
         self.strengths = [-1] * 360
         self.buf = bytearray(22)
         self.ptr = 0
         self.speed = 0
-        while self.pi.serial_data_available(self.uart) > 0:
-            self.pi.serial_read(self.uart, 10000)
+        self.uart.reset_input_buffer()
 
     def update(self):
         last_read = None
-        while self.pi.serial_data_available(self.uart) > 0:
-            char = self.pi.serial_read_byte(self.uart)
-
-            if self.ptr == 0:
-                if char == MEASUREMENT_SYNC:
-                    self.buf[0] = char
+        while self.uart.in_waiting > 0:
+            buf = self.uart.read(1000)
+            for char in buf:
+                if self.ptr == 0:
+                    if char == MEASUREMENT_SYNC:
+                        self.buf[0] = char
+                        self.ptr += 1
+                else:
+                    self.buf[self.ptr] = char
                     self.ptr += 1
-            else:
-                self.buf[self.ptr] = char
-                self.ptr += 1
-                if self.ptr == 22:
-                    last_read = self._parse_measurement()
-                    self.ptr = 0
+                    if self.ptr == 22:
+                        last_read = self._parse_measurement()
+                        self.ptr = 0
         return last_read
 
     def get_distances(self):
