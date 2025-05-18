@@ -6,6 +6,8 @@ DATA_INVALID = 2
 STRENGTH_WARNING = 1
 
 class LDS02RR:
+    # calibration -- need to reduce by 4cm (black)
+    # black and white have 1 cm difference 
     def __init__(self):
         self.uart = serial.Serial('/dev/ttyS0', 115200, timeout=0)
         self.distances = [-1] * 360
