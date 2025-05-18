@@ -10,7 +10,7 @@ import drive
 
 MM_PER_STEPS = 0.296
 
-ldr = lidar.LDS02RR(pi)
+ldr = lidar.LDS02RR()
 # compass = Compass()
 # gyro = Gyro() #initialise class
 # gyro.calibration()
@@ -32,9 +32,6 @@ while True:
 
     # if time.time() > stop_time:
     #     break
-
-drive.steer_p(0, 0, 0)
-print(drive.steps)
     
 
 ## -------- Finding min and max compass angle -------- ##

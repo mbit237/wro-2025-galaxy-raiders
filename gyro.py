@@ -45,7 +45,10 @@ class Gyro:
         z -= self.error_z
         now = time.time()
         delta = now - self.prev_time
-        self.gyro_z += (z + self.prev_z)  / 262 * delta
+        self.gyro_z += (z + self.prev_z)  / 262 * delta 
         # self.gyro_z += (z + self.prev_z) / 2  / 131 * delta
+        # z -- rate of rotation 
+        # average of the previous z and current z * time = number of degrees turned 
+        # the z is measured to another unit: divide it by 131 to convert it to degrees 
         self.prev_z = z
         self.prev_time = now

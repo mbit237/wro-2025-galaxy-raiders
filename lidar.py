@@ -6,7 +6,7 @@ DATA_INVALID = 2
 STRENGTH_WARNING = 1
 
 class LDS02RR:
-    def __init__(self, pi):
+    def __init__(self):
         self.uart = serial.Serial('/dev/ttyS0', 115200, timeout=0)
         self.distances = [-1] * 360
         self.strengths = [-1] * 360
