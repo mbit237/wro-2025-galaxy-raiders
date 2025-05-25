@@ -21,13 +21,15 @@ def steering(dir):
 
 steps = 0
 pin6_level = False
-
+# gpio -- pin 
+# level -- rising / falling edge 
+# tick -- The number of microseconds since boot
 def step_count(gpio, level, tick):
     global steps
     if pin6_level:
-        steps -= 1
-    else:
         steps += 1
+    else:
+        steps -= 1
     # steps += 1
 
 def drive_dir(gpio, level, tick):

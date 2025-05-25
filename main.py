@@ -11,21 +11,32 @@ import drive
 
 MM_PER_STEPS = 0.296
 
-ldr = coind4.CoinD4()
+
+drive.drive(155)
+time.sleep(3)
+drive.drive(0)
+print(drive.steps)
+drive.drive(-155)
+time.sleep(3)
+drive.drive(0)
+print(drive.steps)
+
+# ldr = coind4.CoinD4() #lidar initialise
 # compass = Compass()
 # gyro = Gyro() #initialise class
 # gyro.calibration()
 
-print_time = time.time() + 2
-stop_time = time.time() + 10
-ldr.start()
-while True:
-    ldr.update()
+# print_time = time.time() + 2
+# stop_time = time.time() + 10
+# ldr.start()
+# while True:
+#     ldr.update()
 
-    if time.time() > print_time:
-        print(ldr.get_rpm())
-        print(ldr.get_measurements())
-        print_time = time.time() + 0.5
+#     if time.time() > print_time:
+#         print(ldr.get_rpm())
+#         print(ldr.get_measurements())
+#         print_time = time.time() + 0.5
+
     # gyro.update_angle()
     # if time.time() > print_time:
     #     print(gyro.angle_z())
