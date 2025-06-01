@@ -2,6 +2,8 @@ import pigpio
 import time 
 import struct
 import math 
+import raspi
+
 
 # import lds02rr
 import coind4
