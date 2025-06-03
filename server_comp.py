@@ -68,9 +68,9 @@ def draw(readings):
     print(readings)
     fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
     for reading in readings:
-        ax.plot(reading[0] * math.pi / 180, reading[1])
+        ax.plot([reading[0] * math.pi / 180], [reading[1]], marker='o', markersize=5)
 
-    ax.set_title("A Simple Polar Plot")
+    ax.set_title("Lidar Points")
     plt.show()
 
 print("[STARTING] server is starting...")
