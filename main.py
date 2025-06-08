@@ -2,35 +2,58 @@ import pigpio
 import time 
 import struct
 import math 
-import raspi
-
+# import client_raspi
 
 # import lds02rr
 import coind4
-from compass import Compass
+# from compass import Compass
 from gyro import Gyro 
 import drive
+import spike
 
 MM_PER_STEPS = 0.296
 
+pose = [600, 1600, 90] # Initial pose (mm)
 
-drive.drive(155)
-time.sleep(3)
-drive.drive(0)
-print(drive.steps)
-drive.drive(-155)
-time.sleep(3)
-drive.drive(0)
-print(drive.steps)
+# Test motor encoder
+# drive.drive(155)
+# time.sleep(3)
+# drive.drive(0)
+# print(drive.steps)
+# drive.drive(-155)
+# time.sleep(3)
+# drive.drive(0)
+# print(drive.steps)
 
-# ldr = coind4.CoinD4() #lidar initialise
+
+
+ldr = coind4.CoinD4() #lidar initialise
+ldr.start()
 # compass = Compass()
-# gyro = Gyro() #initialise class
-# gyro.calibration()
+gyro = Gyro() #initialise class
+gyro.calibration()
+
+# while True:
+#     if ldr.update():
+#         break
+# print('cleared')
+while True: 
+    if ldr.update():
+        lidar_measurements = ldr.get_measurements()
+        # pose = [Gyro.angle_z()]
+        # for l in lidar_measurements:
+        #     print(l)
+        # print(len(lidar_measurements))
+        # break
+        #spike detection
+        spikes = spike.identify_spikes(lidar_measurements)
+        c_spikes = spike.add_cartesian(pose, spikes)
+        matches = spike.match_landmarks(c_spikes)
+        print(matches)
+
 
 # print_time = time.time() + 2
 # stop_time = time.time() + 10
-# ldr.start()
 # while True:
 #     ldr.update()
 

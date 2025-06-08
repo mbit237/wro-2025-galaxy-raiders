@@ -7,7 +7,7 @@ HEADER_LENGTH = 10
 FRAME_LENGTH = 85
 
 class CoinD4: # standard convention to start classes with uppercase 
-    def __init__(self, uart, strength=False, integer=False): 
+    def __init__(self, strength=False, integer=False): 
         # strength do not need -> intensity of signal
         #  - look at it to determine whether the reading is accurate 
         self.uart = serial.Serial('/dev/ttyS0', 230400, timeout=0)
@@ -40,11 +40,14 @@ class CoinD4: # standard convention to start classes with uppercase
                     if char == DATA_HEADER[0]: # check if it matches first character
                         self.buf[0] = char
                         self.ptr += 1
+                    # else:
+                        # print('m1')
                 elif self.ptr == 1:
                     if char == DATA_HEADER[1]: # check match second character
                         self.buf[1] = char
                         self.ptr += 1
                     else:
+                        # print('m2')
                         self.ptr = 0
                 else:
                     self.buf[self.ptr] = char
@@ -102,7 +105,7 @@ class CoinD4: # standard convention to start classes with uppercase
 
         for i in range(self.sample_count): # go through all the samples
             start_index = HEADER_LENGTH + i * 3 # each sample has 3 bytes  
-            exposure_mode = 0x03 & self.buf[start_index] # unused  
+            # exposure_mode = 0x03 & self.buf[start_index] # unused  
             distance = self.buf[start_index+1] >> 2 | self.buf[start_index+2] << 6 
             # << 6 is the same as mulitiply by 64 
             # each time we shift is mulitplying by 2 
@@ -110,11 +113,12 @@ class CoinD4: # standard convention to start classes with uppercase
             if self.integer:
                 self.measurements[round(angle) % 360] = distance
             else:
-                self.measurements.append([angle, distance]) # distance is in millimeters 
+                if distance > 0:
+                    self.measurements.append([angle, distance]) # distance is in millimeters 
                 # if self.strength:
                 #     self.measurements[self.measurement_ptr][2] = self.buf[start_index+2] >> 2 | (0x03 & self.buf[start_index+1]) << 6
 
-        if end_angle > 345: # identify last reading 
+        if end_angle > 359: # identify last reading 
             # 345 -- experimentation 
             return True
         return False

@@ -1,5 +1,7 @@
 import pigpio
 
+#GPIO20, GPIO21
+
 pi = pigpio.pi()
 pi.set_PWM_frequency(20, 200)
 
