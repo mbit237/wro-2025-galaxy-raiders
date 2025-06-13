@@ -42,6 +42,11 @@ def drive_dir(gpio, level, tick):
         pin6_level = False 
 
 def steer_p(dir, curr_angle, speed):
+    while curr_angle - dir > 180:
+        curr_angle -= 360
+    while curr_angle - dir < -180:
+        curr_angle += 360
+
     error = curr_angle - dir
     gain = 2 
     correction = error * gain 
@@ -49,6 +54,11 @@ def steer_p(dir, curr_angle, speed):
     drive(speed)
 
 def steer_p_back(dir, curr_angle, speed):
+    while curr_angle - dir > 180:
+        curr_angle -= 360
+    while curr_angle - dir < -180:
+        curr_angle += 360
+
     error = curr_angle - dir
     gain = -2 
     correction = error * gain 
