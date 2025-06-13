@@ -38,7 +38,6 @@ def start():
     msg_length = 0 
     while connected:
         chars = conn.recv(10000)
-        
         for char in chars:
             if ptr == 0:
                 if char == HEADER:
@@ -64,14 +63,42 @@ def start():
     # server.shutdown(socket.SHUT_RD)
     # server.close()
 
-def draw(readings):
-    print(readings)
-    fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
-    for reading in readings:
-        ax.plot([reading[0] * math.pi / 180], [reading[1]], marker='o', markersize=5)
+# Polar
+# fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
 
-    ax.set_title("Lidar Points")
-    plt.show()
+# Cartesian
+fig, ax = plt.subplots()
+ax.grid(True)
+ax.set_xlim(-100, 3100)
+ax.set_ylim(-100, 3100)
+
+def draw(readings):
+    draw_cartesian(readings)
+    # draw_polar(readings)
+
+def draw_cartesian(readings):
+    x = []
+    y = []
+    for reading in readings:
+        x.append(reading[0])
+        y.append(reading[1])
+
+    ax.clear()
+    ax.scatter(x, y)
+    plt.show(block=False)
+    fig.canvas.draw_idle()
+    fig.canvas.flush_events()
+
+def draw_polar(readings):
+    ax.clear()
+    for reading in readings:
+        print(reading)
+        # update_plt([reading[0] * math.pi / 180], [reading[1]]) # , marker='o', markersize=5
+        ax.plot((reading[0] + 90) * math.pi / 180, reading[1], marker='o', markersize=5)
+    # plt.show()
+    plt.show(block=False)
+    fig.canvas.draw_idle()
+    fig.canvas.flush_events()
 
 print("[STARTING] server is starting...")
 start()
