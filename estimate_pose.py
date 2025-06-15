@@ -1,7 +1,6 @@
 import math
 import time
-import gyro as Gyro
-from drive import step_count
+import drive
 
 prev_steps_count = 0
 prev_z = 0
@@ -9,7 +8,7 @@ prev_time = time.time()
 
 def estimate_pose(pose, delta_z, MM_PER_STEPS=0.296):
     global prev_steps_count, prev_z, prev_time
-    curr_steps_count = step_count()
+    curr_steps_count = drive.steps
     dist_travelled = (curr_steps_count - prev_steps_count) / MM_PER_STEPS # distance travelled since last estimate (in mm)
     prev_steps_count = curr_steps_count
 
