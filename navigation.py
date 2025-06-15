@@ -1,7 +1,7 @@
 import math
 import drive
 
-PATH_GAIN = -0.5
+PATH_GAIN = 0.3
 
 def augment_path(path):
     dx = path[1][0] - path[0][0]
