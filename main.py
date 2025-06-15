@@ -13,7 +13,9 @@ import spike
 
 MM_PER_STEPS = 0.296
 
-pose = [600, 1600, 90] # Initial pose (mm)
+# pose = [600, 1600, 90] # Initial pose (mm)
+
+
 
 # Test motor encoder
 # drive.drive(155)
@@ -33,6 +35,33 @@ ldr.start()
 gyro = Gyro() #initialise class
 gyro.calibration()
 
+def get_distance(dir):
+    while True: 
+        if ldr.update():
+            lidar_measurements = ldr.get_measurements()
+            for m in lidar_measurements:
+                if dir+1 > m[0] > dir-1:
+                    return m[1]
+
+def initial_pose():
+    # forward + backward dist, left + right dist, gyro_z
+    fwd_dist = get_distance(0)
+    left_dist = get_distance(270)
+    rear_dist = get_distance(180)
+    right_dist = get_distance(90)
+    
+    #robot is on left side
+    if get_distance(360-50) > 1000 or get_distance(360-34) > 1200 or get_distance(180+35) > 1500 or get_distance(180+15) > 1000:
+        robot_x = (left_dist + (1000 - right_dist)) / 2           
+        robot_y = (rear_dist + (3000 - fwd_dist)) / 2
+        print("left side")
+        return [robot_x, robot_y, gyro.angle_z()]
+    else: # robot is on right side
+        robot_x = ((left_dist + 2000) + (3000 - right_dist)) / 2
+        robot_y = (rear_dist + (3000 - fwd_dist)) / 2
+        print("right side")
+        return [robot_x, robot_y, gyro.angle_z()]
+    
 # while True:
 #     if ldr.update():
 #         break
@@ -40,7 +69,6 @@ gyro.calibration()
 while True: 
     if ldr.update():
         lidar_measurements = ldr.get_measurements()
-        # pose = [Gyro.angle_z()]
         # for l in lidar_measurements:
         #     print(l)
         # print(len(lidar_measurements))
