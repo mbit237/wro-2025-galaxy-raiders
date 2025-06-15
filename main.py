@@ -10,6 +10,8 @@ import coind4
 from gyro import Gyro 
 import drive
 import spike
+import navigation
+import estimate_pose
 
 MM_PER_STEPS = 0.296
 
@@ -49,7 +51,7 @@ def initial_pose():
     left_dist = get_distance(270)
     rear_dist = get_distance(180)
     right_dist = get_distance(90)
-    
+
     #robot is on left side
     if get_distance(360-50) > 1000 or get_distance(360-34) > 1200 or get_distance(180+35) > 1500 or get_distance(180+15) > 1000:
         robot_x = (left_dist + (1000 - right_dist)) / 2           
