@@ -1,4 +1,8 @@
 import math
+import time
+import gyro as Gyro
+from drive import step_count
+
 prev_steps_count = 0
 prev_z = 0
 prev_time = time.time()
@@ -14,10 +18,10 @@ def estimate_pose(pose, delta_z, MM_PER_STEPS=0.296):
     prev_time = now
     
     #adding the change in gyro heading to previous pose heading
-    curr_heading = (z + prev_z)  / 262 * delta + pose[2]  # current heading in degrees
+    curr_heading = (delta_z + prev_z)  / 262 * delta + pose[2]  # current heading in degrees
     aver_heading = (curr_heading + pose[2]) / 2
-    prev_z = z  # update previous z for next iteration
-
+    prev_z = delta_z  # update previous z for next iteration
+    
     # change in x and y, dist_travelled is the hypotenuse
     dx = dist_travelled * math.cos(aver_heading / 180 * math.pi) # returns the opposite
     dy = dist_travelled * math.sin(aver_heading / 180 * math.pi) # returns the adjacent
