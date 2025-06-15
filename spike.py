@@ -37,7 +37,7 @@ def add_cartesian(pose, spikes):# spikes in cartesian coordinates
     
         x = pose[0] + dx
         y = pose[1] + dy
-        c_spikes.append([x, y, pose[2], distance])
+        c_spikes.append([x, y, spike[0], spike[1]])
         
     return c_spikes
 

@@ -27,11 +27,11 @@ class Gyro:
 
     def calibration(self):
         sum_z = 0 
-        for x in range(500):
+        for x in range(1000):
             sum_z += self.rate_z()
             time.sleep(0.01)
-        self.error_z = sum_z / 500
-        return sum_z/500
+        self.error_z = sum_z / 1000
+        return sum_z/1000
 
     def save_calibration(self, filename='gyro_calibration.txt'):
         with open(filename, 'w') as f:
@@ -50,6 +50,12 @@ class Gyro:
     
     def angle_z(self):
         return self.gyro_z
+
+    def delta_z(self):
+        # z = struct.unpack('>h', pi.i2c_read_i2c_block_data(self.handle, 71, 2)[1])[0]
+        z = struct.unpack('>h', bytes(self.bus.read_i2c_block_data(self.addr, 71, 2)))[0]
+        z -= self.error_z
+        return z
 
     def update_angle(self):
         # z = struct.unpack('>h', pi.i2c_read_i2c_block_data(self.handle, 71, 2)[1])[0]
