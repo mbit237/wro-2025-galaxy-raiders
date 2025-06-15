@@ -34,11 +34,11 @@ def drive_path(path, pose, speed):
     err = dot(path[5], robot_vec) # how far off the robot is (in mm)
     corr = err * PATH_GAIN 
     # Limit correction
-    if corr > 25:
-        corr = 25
-    elif corr < -25:
-        corr = -25
-    
+    if corr > 30:
+        corr = 30
+    elif corr < -30:
+        corr = -30
+
     target_dir += corr 
     
     steer_in_dir(target_dir, pose[2], speed)
