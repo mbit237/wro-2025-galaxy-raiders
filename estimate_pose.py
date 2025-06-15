@@ -1,4 +1,5 @@
 import math
+import time
 prev_steps_count = 0
 prev_z = 0
 prev_time = time.time()
