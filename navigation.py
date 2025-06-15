@@ -1,4 +1,7 @@
 import math
+import drive
+
+PATH_GAIN = -0.5
 
 def augment_path(path):
     dx = path[1][0] - path[0][0]
@@ -41,7 +44,7 @@ def drive_path(path, pose, speed):
 
     target_dir += corr 
     
-    steer_in_dir(target_dir, pose[2], speed)
+    drive.steer_p(target_dir, pose[2], speed)
 
 def drive_paths(idx, paths, pose, speed): # idx -- references path currently following 
     path = paths[idx]
