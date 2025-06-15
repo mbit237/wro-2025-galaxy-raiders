@@ -11,9 +11,16 @@ from gyro import Gyro
 import drive
 import spike
 import navigation
-import estimate_pose
+from estimate_pose import estimate_pose
 
 MM_PER_STEPS = 0.296
+
+paths = [
+    [[500, 500], [500, 2500]], 
+    [[500, 2500], [2500, 2500]], 
+    [[2500, 2500], [2500, 500]], 
+    [[2500, 500], [500, 500]]
+]
 
 # pose = [600, 1600, 90] # Initial pose (mm)
 
@@ -68,7 +75,10 @@ def initial_pose():
 #     if ldr.update():
 #         break
 # print('cleared')
-while True: 
+paths = navigation.augment_paths(paths)
+index = 0
+while True:
+    pose = estimate_pose(initial_pose(), gyro.delta_z(), MM_PER_STEPS) 
     if ldr.update():
         lidar_measurements = ldr.get_measurements()
         # for l in lidar_measurements:
@@ -79,8 +89,11 @@ while True:
         spikes = spike.identify_spikes(lidar_measurements)
         c_spikes = spike.add_cartesian(pose, spikes)
         matches = spike.match_landmarks(c_spikes)
+        navigation.drive_paths(index, paths, pose, 100)
         print(matches)
 
+    index = navigation.drive_paths(index, paths, pose, 100)
+    index %= 4
 
 # print_time = time.time() + 2
 # stop_time = time.time() + 10
