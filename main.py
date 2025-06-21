@@ -53,7 +53,7 @@ def get_distance(dir):
                     return m[1]
 
 def initial_pose(ldr_measurements):
-    # REFER TO "Lidar measurements" in onshape
+    # REFER TO "Lidar measurements" IN ONSHAPE
     # forward + backward dist, left + right dist, gyro_z
     fwd_dist = get_distance(0)
     left_dist = get_distance(270)
@@ -70,20 +70,22 @@ def initial_pose(ldr_measurements):
 
     if (pos1_line > 1000 or pos2_line > 1300 or pos3_line > 1500 or pos4_line > 1000): 
         # robot is either on left side pos 1-6 or on right side pos 1, 2, 4 or 5
-        if (40 > check_spike > 5) and (175 > check_spike > 145):
-            # robot is on right side, pos 1, 2, 4 or 5
+        if (40 > check_spike > 5) or (175 > check_spike > 145): # 40> check_spike >5 - checking that spike is between 5 and 40 degrees
+            # !!! This condition may be fulfilled if robot is on the left side pos 4, 5 or 6
+            # ADD DISTANCE CONDITION TO DIFFERENTIATE LEFT AND RIGHT SIDE (use onshape to draw lines to estimate distances for condition)
+            # robot is on right side, pos R1, R2, R4 or R5
             robot_x = ((left_dist + 2000) + (3000 - right_dist)) / 2 # take average readings of left and right measurements
             robot_y = (rear_dist + (3000 - fwd_dist)) / 2
             print("right side, pos 1, 2, 4 or 5")
             return [robot_x, robot_y, gyro.angle_z()]
         else:
-            # robot is on left side, pos 1-6
+            # robot is on left side, pos L1-L6
             robot_x = (left_dist + (1000 - right_dist)) / 2
             robot_y = (rear_dist + (3000 - fwd_dist)) / 2
             print("left side, pos 1-6")
             return [robot_x, robot_y, gyro.angle_z()]
 
-    else: # robot is on right side, pos 3 or 6
+    else: # robot is on right side, pos R3 or R6
         robot_x = ((left_dist + 2000) + (3000 - right_dist)) / 2
         robot_y = (rear_dist + (3000 - fwd_dist)) / 2
         print("right side, pos 3 or 6")
