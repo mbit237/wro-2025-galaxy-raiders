@@ -52,23 +52,41 @@ def get_distance(dir):
                 if dir+1 > m[0] > dir-1:
                     return m[1]
 
-def initial_pose():
+def initial_pose(ldr_measurements):
+    # REFER TO "Lidar measurements" in onshape
     # forward + backward dist, left + right dist, gyro_z
     fwd_dist = get_distance(0)
     left_dist = get_distance(270)
     rear_dist = get_distance(180)
     right_dist = get_distance(90)
+    # inner spike at 45-85 deg, outer spike at 5-40 deg
 
-    #robot is on left side
-    if get_distance(360-50) > 1000 or get_distance(360-34) > 1200 or get_distance(180+35) > 1500 or get_distance(180+15) > 1000:
-        robot_x = (left_dist + (1000 - right_dist)) / 2           
-        robot_y = (rear_dist + (3000 - fwd_dist)) / 2
-        print("left side")
-        return [robot_x, robot_y, gyro.angle_z()]
-    else: # robot is on right side
+    pos1_line = get_distance(360-50) # imaginary line drawn at pos 1
+    pos2_line = get_distance(360-34) # imaginary line at pos 2
+    pos3_line = get_distance(180+35) # imaginary line at pos 3
+    pos4_line = get_distance(180+15) # imaginary line at pos 4
+
+    check_spike = identify_spikes(ldr_measurements)
+
+    if (pos1_line > 1000 or pos2_line > 1300 or pos3_line > 1500 or pos4_line > 1000): 
+        # robot is either on left side pos 1-6 or on right side pos 1, 2, 4 or 5
+        if (40 > check_spike > 5) and (175 > check_spike > 145):
+            # robot is on right side, pos 1, 2, 4 or 5
+            robot_x = ((left_dist + 2000) + (3000 - right_dist)) / 2 # take average readings of left and right measurements
+            robot_y = (rear_dist + (3000 - fwd_dist)) / 2
+            print("right side, pos 1, 2, 4 or 5")
+            return [robot_x, robot_y, gyro.angle_z()]
+        else:
+            # robot is on left side, pos 1-6
+            robot_x = (left_dist + (1000 - right_dist)) / 2
+            robot_y = (rear_dist + (3000 - fwd_dist)) / 2
+            print("left side, pos 1-6")
+            return [robot_x, robot_y, gyro.angle_z()]
+
+    else: # robot is on right side, pos 3 or 6
         robot_x = ((left_dist + 2000) + (3000 - right_dist)) / 2
         robot_y = (rear_dist + (3000 - fwd_dist)) / 2
-        print("right side")
+        print("right side, pos 3 or 6")
         return [robot_x, robot_y, gyro.angle_z()]
     
 # while True:
