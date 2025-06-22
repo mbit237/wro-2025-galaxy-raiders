@@ -61,10 +61,10 @@ def initial_pose(ldr_measurements):
     right_dist = get_distance(90)
     # inner spike at 45-85 deg, outer spike at 5-40 deg
 
-    pos1_line = get_distance(360-50) # imaginary line drawn at pos 1
-    pos2_line = get_distance(360-34) # imaginary line at pos 2
-    pos3_line = get_distance(180+35) # imaginary line at pos 3
-    pos4_line = get_distance(180+15) # imaginary line at pos 4
+    pos1_line = get_distance(360-50) # imaginary line from pos 1 to wall
+    pos2_line = get_distance(360-34) # imaginary line from pos 2 to wall
+    pos3_line = get_distance(180+35) # imaginary line from pos 3 to wall
+    pos4_line = get_distance(180+15) # imaginary line from pos 4 to wall
 
     check_spike = identify_spikes(ldr_measurements)
 
