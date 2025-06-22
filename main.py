@@ -52,24 +52,57 @@ def get_distance(dir):
                 if dir+1 > m[0] > dir-1:
                     return m[1]
 
+def identify_closer_spikes(measurements):
+    closer_spikes = []
+    for d in range(len(measurements)):
+        prev_d = measurements[d-1][1]
+        curr_d = measurements[d][1]
+        next_d = measurements[(d+1) % len(measurements)][1] 
+        #check if the difference between the previous and the current is signifcantly smaller/bigger than the difference between current and next
+        if (prev_d - curr_d > 300 or next_d - curr_d > 300) and (curr_d > 200):
+                closer_spikes.append(measurements[d])
+    
+    return closer_spikes
+
+
 def initial_pose():
     # forward + backward dist, left + right dist, gyro_z
     fwd_dist = get_distance(0)
-    left_dist = get_distance(270)
+    left_dist = get_distance(90)
     rear_dist = get_distance(180)
-    right_dist = get_distance(90)
+    right_dist = get_distance(270)
 
     #robot is on left side
-    if get_distance(360-50) > 1000 or get_distance(360-34) > 1200 or get_distance(180+35) > 1500 or get_distance(180+15) > 1000:
-        robot_x = (left_dist + (1000 - right_dist)) / 2           
-        robot_y = (rear_dist + (3000 - fwd_dist)) / 2
-        print("left side")
-        return [robot_x, robot_y, gyro.angle_z()]
-    else: # robot is on right side
-        robot_x = ((left_dist + 2000) + (3000 - right_dist)) / 2
-        robot_y = (rear_dist + (3000 - fwd_dist)) / 2
-        print("right side")
-        return [robot_x, robot_y, gyro.angle_z()]
+    vote = 0
+    position = 0
+    while True:
+        if ldr.update():
+            identified_spikes = identify_closer_spikes(ldr.get_measurements())
+            for closer_spike in identified_spikes:
+                if 0 < closer_spike[0] < 180:
+                    vote += 1
+                if 180 < closer_spike[0] < 360:
+                    vote -= 1
+            if vote <= -10:
+                x = (left_dist + (1000 - right_dist)) / 2
+                y = ((3000 - fwd_dist) + rear_dist) / 2
+                print("left side", "x:", x, "y:", y)
+                return
+            if vote >= 10:
+                x = ((left_dist + (1000 - right_dist)) / 2) + 2000
+                y = ((3000 - fwd_dist) + rear_dist) / 2
+                print("right side", "x:", x, "y:", y)
+                return
+    # if get_distance(360-50) > 1000 or get_distance(360-34) > 1200 or get_distance(180+35) > 1500 or get_distance(180+15) > 1000:
+    #     robot_x = (left_dist + (1000 - right_dist)) / 2           
+    #     robot_y = (rear_dist + (3000 - fwd_dist)) / 2
+    #     print("left side")
+    #     return [robot_x, robot_y, gyro.angle_z()]
+    # else: # robot is on right side
+    #     robot_x = ((left_dist + 2000) + (3000 - right_dist)) / 2
+    #     robot_y = (rear_dist + (3000 - fwd_dist)) / 2
+    #     print("right side")
+    #     return [robot_x, robot_y, gyro.angle_z()]
     
 # while True:
 #     if ldr.update():
@@ -77,9 +110,21 @@ def initial_pose():
 # print('cleared')
 paths = navigation.augment_paths(paths)
 index = 0
+print('start')
+while True:
+    initial_pose()
+    print('done')
+    #pose = estimate_pose(initial_pose(), gyro.delta_z(), MM_PER_STEPS)
+    # if ldr.update():
+    #     lidar_measurements = ldr.get_measurements()
+    #     closer_spikes = identify_closer_spikes(lidar_measurements)
+    #     print(closer_spikes)
+
 while True:
     pose = estimate_pose(initial_pose(), gyro.delta_z(), MM_PER_STEPS) 
+    print("Pose:", pose)
     if ldr.update():
+        print("working")
         lidar_measurements = ldr.get_measurements()
         # for l in lidar_measurements:
         #     print(l)
@@ -87,6 +132,8 @@ while True:
         # break
         #spike detection
         spikes = spike.identify_spikes(lidar_measurements)
+        closer_spikes = identify_closer_spikes(lidar_measurements)
+        print(closer_spikes)
         c_spikes = spike.add_cartesian(pose, spikes)
         matches = spike.match_landmarks(c_spikes)
         navigation.drive_paths(index, paths, pose, 100)
