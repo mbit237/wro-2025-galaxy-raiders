@@ -70,9 +70,7 @@ def initial_pose(ldr_measurements):
 
     if (pos1_line > 1000 or pos2_line > 1300 or pos3_line > 1500 or pos4_line > 1000): 
         # robot is either on left side pos 1-6 or on right side pos 1, 2, 4 or 5
-        if (40 > check_spike > 5) or (175 > check_spike > 145): # 40> check_spike >5 - checking that spike is between 5 and 40 degrees
-            # !!! This condition may be fulfilled if robot is on the left side pos 4, 5 or 6
-            # ADD DISTANCE CONDITION TO DIFFERENTIATE LEFT AND RIGHT SIDE (use onshape to draw lines to estimate distances for condition)
+        if (90 > check_spike[0] > 5 and check_spike[1] > 1100) and (175 > check_spike[0] > 100 and check_spike[1] > 1200):
             # robot is on right side, pos R1, R2, R4 or R5
             robot_x = ((left_dist + 2000) + (3000 - right_dist)) / 2 # take average readings of left and right measurements
             robot_y = (rear_dist + (3000 - fwd_dist)) / 2
