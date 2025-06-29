@@ -114,8 +114,9 @@ print('start')
 while True:
     initial_pose()
     print('done')
-    #pose = estimate_pose(initial_pose(), gyro.delta_z(), MM_PER_STEPS)
+    # pose = estimate_pose(initial_pose(), gyro.delta_z(), MM_PER_STEPS)
     # if ldr.update():
+    #     print("working")
     #     lidar_measurements = ldr.get_measurements()
     #     closer_spikes = identify_closer_spikes(lidar_measurements)
     #     print(closer_spikes)
