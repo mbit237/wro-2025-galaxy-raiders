@@ -16,10 +16,10 @@ from estimate_pose import estimate_pose
 MM_PER_STEPS = 0.296
 
 paths = [
-    [[500, 500], [500, 2500]], 
-    [[500, 2500], [2500, 2500]], 
-    [[2500, 2500], [2500, 500]], 
-    [[2500, 500], [500, 500]]
+    [[500, 500], [500, 2200]], 
+    [[500, 2500], [2200, 2500]], 
+    [[2500, 2500], [2500, 800]], 
+    [[2500, 500], [800, 500]]
 ]
 
 # pose = [600, 1600, 90] # Initial pose (mm)
@@ -35,14 +35,6 @@ paths = [
 # time.sleep(3)
 # drive.drive(0)
 # print(drive.steps)
-
-
-
-ldr = coind4.CoinD4() #lidar initialise
-ldr.start()
-# compass = Compass()
-gyro = Gyro() #initialise class
-gyro.calibration()
 
 def get_distance(dir):
     while True: 
@@ -87,12 +79,12 @@ def initial_pose():
                 x = (left_dist + (1000 - right_dist)) / 2
                 y = ((3000 - fwd_dist) + rear_dist) / 2
                 print("left side", "x:", x, "y:", y)
-                return
+                return [x, y, 90]
             if vote >= 10:
                 x = ((left_dist + (1000 - right_dist)) / 2) + 2000
                 y = ((3000 - fwd_dist) + rear_dist) / 2
                 print("right side", "x:", x, "y:", y)
-                return
+                return [x, y, 90]
     # if get_distance(360-50) > 1000 or get_distance(360-34) > 1200 or get_distance(180+35) > 1500 or get_distance(180+15) > 1000:
     #     robot_x = (left_dist + (1000 - right_dist)) / 2           
     #     robot_y = (rear_dist + (3000 - fwd_dist)) / 2
@@ -108,12 +100,22 @@ def initial_pose():
 #     if ldr.update():
 #         break
 # print('cleared')
+ldr = coind4.CoinD4() #lidar initialise
+ldr.start()
+print("Lidar started")
+# compass = Compass()
+gyro = Gyro() #initialise class
+gyro.calibration()
+print("Gyro calibrated")
+
 paths = navigation.augment_paths(paths)
 index = 0
-print('start')
-while True:
-    initial_pose()
-    print('done')
+print("Paths augmented")
+# print('start')
+
+# while True:
+#     initial_pose()
+#     print('done')
     # pose = estimate_pose(initial_pose(), gyro.delta_z(), MM_PER_STEPS)
     # if ldr.update():
     #     print("working")
@@ -121,9 +123,13 @@ while True:
     #     closer_spikes = identify_closer_spikes(lidar_measurements)
     #     print(closer_spikes)
 
+pose = initial_pose()
+print("Initial pose:", pose)
+print("angle_z =", gyro.angle_z())
+time.sleep(2)
 while True:
-    pose = estimate_pose(initial_pose(), gyro.delta_z(), MM_PER_STEPS) 
-    print("Pose:", pose)
+    pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
+    # print("Pose:", pose)
     if ldr.update():
         print("working")
         lidar_measurements = ldr.get_measurements()
@@ -137,12 +143,14 @@ while True:
         print(closer_spikes)
         c_spikes = spike.add_cartesian(pose, spikes)
         matches = spike.match_landmarks(c_spikes)
-        navigation.drive_paths(index, paths, pose, 100)
         print(matches)
 
-    index = navigation.drive_paths(index, paths, pose, 100)
+    index = navigation.drive_paths(index, paths, pose, 250)
     index %= 4
+    # if index == 1:
+    #     break
 
+drive.drive(0)  # Stop the robot by setting speed to 0
 # print_time = time.time() + 2
 # stop_time = time.time() + 10
 # while True:

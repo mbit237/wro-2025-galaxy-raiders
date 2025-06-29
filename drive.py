@@ -18,7 +18,7 @@ def steering(dir):
         dir = -45
     elif dir > 45:
         dir = 45
-    pulse_duration = 1400 + (80 / 9) *(dir + 45) - 400
+    pulse_duration = 1340 + (80 / 9) *(dir + 45) - 400
     pi.set_servo_pulsewidth(23, pulse_duration)
 
 steps = 0

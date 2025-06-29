@@ -27,7 +27,7 @@ class Gyro:
 
     def calibration(self):
         sum_z = 0 
-        for x in range(1000):
+        for x in range(500):
             sum_z += self.rate_z()
             time.sleep(0.01)
         self.error_z = sum_z / 1000

@@ -1,7 +1,7 @@
 import math
 import drive
 
-PATH_GAIN = 0.3
+PATH_GAIN = -0.2
 
 def augment_path(path):
     dx = path[1][0] - path[0][0]
@@ -43,13 +43,13 @@ def drive_path(path, pose, speed):
         corr = -30
 
     target_dir += corr 
-    
+    print(f"Target direction: {target_dir}, gyro: {pose}")
     drive.steer_p(target_dir, pose[2], speed)
 
 def drive_paths(idx, paths, pose, speed): # idx -- references path currently following 
     path = paths[idx]
     
-    drive_path(path, pose, 20)
+    drive_path(path, pose, speed)
     robot_vec = [pose[0] - path[0][0], pose[1] - path[0][1]]
     dist_travelled_along_path = dot(path[4], robot_vec)
     
