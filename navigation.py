@@ -43,7 +43,7 @@ def drive_path(path, pose, speed):
         corr = -30
 
     target_dir += corr 
-    print(f"Target direction: {target_dir}, gyro: {pose}")
+    # print(f"Target direction: {target_dir}, gyro: {pose}")
     drive.steer_p(target_dir, pose[2], speed)
 
 def drive_paths(idx, paths, pose, speed): # idx -- references path currently following 

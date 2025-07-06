@@ -12,7 +12,7 @@ LANDMARKS = [
     [3000, 3000]
 ]
 
-LANDMARK_THRESHOLD = 100
+LANDMARK_THRESHOLD = 120
 M_THRESHOLD = 100
 
 def identify_spikes(measurements):
@@ -37,7 +37,7 @@ def add_cartesian(pose, spikes):# spikes in cartesian coordinates
     
         x = pose[0] + dx
         y = pose[1] + dy
-        c_spikes.append([x, y, spike[0], spike[1]])
+        c_spikes.append([x, y, spike[0], distance])
         
     return c_spikes
 

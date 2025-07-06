@@ -15,6 +15,11 @@ from estimate_pose import estimate_pose
 
 MM_PER_STEPS = 0.296
 
+# ratios need to be tuned
+POSITION_FILTER_RATIO = 0.10 # 1% confidence
+HEADING_FILTER_RATIO = 0.10  # 5%, if it is too low, heading error will be larger
+                             # if too high, robot will wobble
+
 paths = [
     [[500, 500], [500, 2000]], 
     [[500, 2500], [2000, 2500]], 
@@ -95,6 +100,76 @@ def initial_pose():
     #     robot_y = (rear_dist + (3000 - fwd_dist)) / 2
     #     print("right side")
     #     return [robot_x, robot_y, gyro.angle_z()]
+
+def calc_position_error(matches):
+    if not matches:  # Handle empty matches list
+        return [0, 0]
+    errors = []
+    for match in matches:
+        errorx = match[0] - match[2]
+        errory = match[1] - match[3]
+        errors.append([errorx, errory])
+        
+    err_x = 0
+    err_y = 0
+    for err in errors:
+        err_x += err[0]
+        err_y += err[1]
+    ave_err_x = err_x / len(errors)
+    ave_err_y = err_y / len(errors)
+    
+    return [ave_err_x, ave_err_y]
+
+def calc_pose(pose, error):
+    new_x = pose[0] - error[0]
+    new_y = pose[1] - error[1]
+    
+    return [new_x, new_y, pose[2]]
+
+def merge_positions(odo_pose, spike_pose):
+    odo_x = odo_pose[0]
+    odo_y = odo_pose[1]
+    spike_x = spike_pose[0]
+    spike_y = spike_pose[1]
+    merged_x = odo_x * (1 - POSITION_FILTER_RATIO) + spike_x * POSITION_FILTER_RATIO
+    merged_y = odo_y * (1 - POSITION_FILTER_RATIO) + spike_y * POSITION_FILTER_RATIO
+    
+    return [merged_x, merged_y, odo_pose[2]]
+
+def calc_angle_error(pose, matches):
+    if not matches:
+        return 0
+    
+    angle_errors = []
+    
+    for match in matches:
+        robot_x = pose[0]
+        robot_y = pose[1]
+        landmark_x = match[2]
+        landmark_y = match[3]
+        dx = landmark_x - robot_x
+        dy = landmark_y - robot_y
+        a_theta = math.atan2(dy, dx) * 180 / math.pi # actual theta
+        m_theta = pose[2] + match[4] # measured_theta
+        angle_err = m_theta - a_theta
+        while angle_err > 180:
+            angle_err -= 360
+        while angle_err < -180:
+            angle_err += 360
+        
+        angle_errors.append(angle_err)
+    # print(angle_errors)
+    ave_angle_err = sum(angle_errors) / len(angle_errors)
+    return ave_angle_err
+
+def calc_heading(pose, error):
+    return [pose[0], pose[1], (pose[2] - error)]
+
+def merge_heading(merged_position_pose, spike_pose):
+    angle_z = merged_position_pose[2]
+    spike_z = spike_pose[2]
+    merged_angle = angle_z * (1 - HEADING_FILTER_RATIO) + spike_z * HEADING_FILTER_RATIO
+    return [merged_position_pose[0], merged_position_pose[1], merged_angle]
     
 # while True:
 #     if ldr.update():
@@ -127,11 +202,12 @@ pose = initial_pose()
 print("Initial pose:", pose)
 print("angle_z =", gyro.angle_z())
 time.sleep(2)
+count = 0
 while True:
     pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
     # print("Pose:", pose)
     if ldr.update():
-        print("working")
+        # print("working", time.time())
         lidar_measurements = ldr.get_measurements()
         # for l in lidar_measurements:
         #     print(l)
@@ -139,11 +215,28 @@ while True:
         # break
         #spike detection
         spikes = spike.identify_spikes(lidar_measurements)
+        # print(spikes)
         closer_spikes = identify_closer_spikes(lidar_measurements)
-        print(closer_spikes)
+        # print(closer_spikes)
         c_spikes = spike.add_cartesian(pose, spikes)
+        print(pose, c_spikes)
         matches = spike.match_landmarks(c_spikes)
-        print(matches)
+        print(len(matches))
+        if len(matches) == 0:
+            count += 1
+            if count > 5:
+                drive.drive(0)
+                time.sleep(20)
+                count = 0
+        position_error = calc_position_error(matches)
+        spike_pose = calc_pose(pose, position_error)
+        merged_position_pose = merge_positions(pose, spike_pose)
+        angle_error = calc_angle_error(merged_position_pose, matches)
+        # print(angle_error)
+        spike_heading_pose = calc_heading(merged_position_pose, angle_error)
+        # print(spike_heading_pose)
+        merged_pose = merge_heading(merged_position_pose, spike_heading_pose)
+        pose = merged_pose
 
     index = navigation.drive_paths(index, paths, pose, 250)
     index %= 4
