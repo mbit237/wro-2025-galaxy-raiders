@@ -48,7 +48,10 @@ def match_landmarks(c_spikes):
             dx = cs[0] - landmark[0]
             dy = cs[1] - landmark[1]
             dist = math.sqrt(dx**2 + dy**2)
+            err_x = round(abs(cs[0] - landmark[0]), 2)
+            err_y = round(abs(cs[1] - landmark[1]), 2)
             if dist < LANDMARK_THRESHOLD:
-                matches.append([cs[0], cs[1], landmark[0], landmark[1], cs[2], cs[3]])
+                # matches.append([round(cs[0], 2), round(cs[1], 2), landmark[0], landmark[1], cs[2], cs[3]])
+                matches.append([round(cs[0], 2), round(cs[1], 2), landmark[0], landmark[1], cs[2], cs[3], err_x, err_y])
                 break
     return matches

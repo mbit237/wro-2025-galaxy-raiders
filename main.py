@@ -16,8 +16,8 @@ from estimate_pose import estimate_pose
 MM_PER_STEPS = 0.296
 
 # ratios need to be tuned
-POSITION_FILTER_RATIO = 0.10 # 1% confidence
-HEADING_FILTER_RATIO = 0.10  # 5%, if it is too low, heading error will be larger
+POSITION_FILTER_RATIO = 0.001 # 0.1% confidence
+HEADING_FILTER_RATIO = 0.001  # 0.1%, if it is too low, heading error will be larger
                              # if too high, robot will wobble
 
 paths = [
@@ -198,7 +198,8 @@ print("Paths augmented")
     #     closer_spikes = identify_closer_spikes(lidar_measurements)
     #     print(closer_spikes)
 
-pose = initial_pose()
+# pose = initial_pose()
+pose = [500, 500, 90] # Initial pose for testing
 print("Initial pose:", pose)
 print("angle_z =", gyro.angle_z())
 time.sleep(2)
@@ -216,18 +217,18 @@ while True:
         #spike detection
         spikes = spike.identify_spikes(lidar_measurements)
         # print(spikes)
-        closer_spikes = identify_closer_spikes(lidar_measurements)
-        # print(closer_spikes)
         c_spikes = spike.add_cartesian(pose, spikes)
-        print(pose, c_spikes)
+        # print(pose, c_spikes)
         matches = spike.match_landmarks(c_spikes)
         print(len(matches))
-        if len(matches) == 0:
-            count += 1
-            if count > 5:
-                drive.drive(0)
-                time.sleep(20)
-                count = 0
+        print(pose, matches)
+        
+        # if len(matches) == 0:
+        #     count += 1
+        #     if count > 5:
+        #         drive.drive(0)
+        #         time.sleep(20)
+        #         count = 0
         position_error = calc_position_error(matches)
         spike_pose = calc_pose(pose, position_error)
         merged_position_pose = merge_positions(pose, spike_pose)
@@ -240,8 +241,8 @@ while True:
 
     index = navigation.drive_paths(index, paths, pose, 250)
     index %= 4
-    # if index == 1:
-    #     break
+    if index == 1:
+        break
 
 drive.drive(0)  # Stop the robot by setting speed to 0
 # print_time = time.time() + 2
