@@ -18,7 +18,7 @@ MM_PER_STEPS = 0.296
 # ratios need to be tuned
 POSITION_FILTER_RATIO = 0.001 # 0.1% confidence
 HEADING_FILTER_RATIO = 0.001  # 0.1%, if it is too low, heading error will be larger
-                             # if too high, robot will wobble
+                             # if too high, robot will jump around
 
 paths = [
     [[500, 500], [500, 2000]], 
@@ -198,8 +198,8 @@ print("Paths augmented")
     #     closer_spikes = identify_closer_spikes(lidar_measurements)
     #     print(closer_spikes)
 
-# pose = initial_pose()
-pose = [500, 500, 90] # Initial pose for testing
+pose = initial_pose()
+# pose = [500, 500, 90] # Initial pose for testing
 print("Initial pose:", pose)
 print("angle_z =", gyro.angle_z())
 time.sleep(2)
@@ -241,7 +241,7 @@ while True:
 
     index = navigation.drive_paths(index, paths, pose, 250)
     index %= 4
-    if index == 1:
+    if index == 2:
         break
 
 drive.drive(0)  # Stop the robot by setting speed to 0

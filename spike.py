@@ -21,8 +21,8 @@ def identify_spikes(measurements):
         prev_d = measurements[d-1][1]
         curr_d = measurements[d][1]
         next_d = measurements[(d+1) % len(measurements)][1] 
-        if prev_d > 100 and curr_d > 100 and next_d > 100:
-            if abs((prev_d - curr_d) + (next_d - curr_d)) > M_THRESHOLD:
+        if abs((prev_d - curr_d) + (next_d - curr_d)) > M_THRESHOLD:
+            if 100 < measurements[d][1] < 1500:
                 spikes.append(measurements[d])
             
     return spikes
