@@ -11,13 +11,13 @@ from gyro import Gyro
 import drive
 import spike
 import navigation
-from estimate_pose import estimate_pose
+from estimate_pose import estimate_pose, reset_pose
 
 MM_PER_STEPS = 0.296
 
 # ratios need to be tuned
-POSITION_FILTER_RATIO = 0.001 # 0.1% confidence
-HEADING_FILTER_RATIO = 0.001  # 0.1%, if it is too low, heading error will be larger
+POSITION_FILTER_RATIO = 0.075 # 0.1% confidence
+HEADING_FILTER_RATIO = 0.075  # 0.1%, if it is too low, heading error will be larger
                              # if too high, robot will jump around
 
 paths = [
@@ -171,6 +171,7 @@ def merge_heading(merged_position_pose, spike_pose):
     merged_angle = angle_z * (1 - HEADING_FILTER_RATIO) + spike_z * HEADING_FILTER_RATIO
     return [merged_position_pose[0], merged_position_pose[1], merged_angle]
     
+print('steps', drive.steps)
 # while True:
 #     if ldr.update():
 #         break
@@ -202,8 +203,10 @@ pose = initial_pose()
 # pose = [500, 500, 90] # Initial pose for testing
 print("Initial pose:", pose)
 print("angle_z =", gyro.angle_z())
-time.sleep(2)
+# time.sleep(2)
 count = 0
+print('steps', drive.steps)
+reset_pose()  # Reset the pose to the initial state
 while True:
     pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
     # print("Pose:", pose)
@@ -241,7 +244,7 @@ while True:
 
     index = navigation.drive_paths(index, paths, pose, 250)
     index %= 4
-    if index == 2:
+    if index == 4:
         break
 
 drive.drive(0)  # Stop the robot by setting speed to 0
