@@ -12,12 +12,13 @@ import drive
 import spike
 import navigation
 from estimate_pose import estimate_pose, reset_pose
+import client_raspi as client
 
 MM_PER_STEPS = 0.296
 
 # ratios need to be tuned
-POSITION_FILTER_RATIO = 0.075 # 0.1% confidence
-HEADING_FILTER_RATIO = 0.075  # 0.1%, if it is too low, heading error will be larger
+POSITION_FILTER_RATIO = 0.1 # 0.1% confidence
+HEADING_FILTER_RATIO = 0.025  # 0.1%, if it is too low, heading error will be larger
                              # if too high, robot will jump around
 
 paths = [
@@ -189,6 +190,9 @@ index = 0
 print("Paths augmented")
 # print('start')
 
+client.connect()
+print("Client connected")
+
 # while True:
 #     initial_pose()
 #     print('done')
@@ -223,7 +227,12 @@ while True:
         c_spikes = spike.add_cartesian(pose, spikes)
         # print(pose, c_spikes)
         matches = spike.match_landmarks(c_spikes)
+        client.send(matches)
         print(len(matches))
+        while pose[2] > 180:
+            pose[2] -= 360
+        while pose[2] < -180:
+            pose[2] += 360
         print(pose, matches)
         
         # if len(matches) == 0:
@@ -234,18 +243,21 @@ while True:
         #         count = 0
         position_error = calc_position_error(matches)
         spike_pose = calc_pose(pose, position_error)
+        print("Pose after position error:", spike_pose)
         merged_position_pose = merge_positions(pose, spike_pose)
         angle_error = calc_angle_error(merged_position_pose, matches)
         # print(angle_error)
         spike_heading_pose = calc_heading(merged_position_pose, angle_error)
         # print(spike_heading_pose)
         merged_pose = merge_heading(merged_position_pose, spike_heading_pose)
-        pose = merged_pose
+        print("merged_position_pose:", merged_position_pose[2], "spike_heading_pose:", spike_heading_pose[2])
+        pose = merged_position_pose
+        # pose = merged_pose
 
     index = navigation.drive_paths(index, paths, pose, 250)
     index %= 4
-    if index == 4:
-        break
+    # if index == 3:
+    #     break
 
 drive.drive(0)  # Stop the robot by setting speed to 0
 # print_time = time.time() + 2

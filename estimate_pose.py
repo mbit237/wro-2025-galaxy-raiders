@@ -30,7 +30,7 @@ def estimate_pose(pose, delta_z, MM_PER_STEPS=0.296):
     prev_time = now
     
     #adding the change in gyro heading to previous pose heading
-    theta = (delta_z + prev_z) / 2 / 131 * delta # tune rate of rotation (131)
+    theta = (delta_z + prev_z) / 2 / 120 * delta # tune rate of rotation (131)
     curr_heading = theta + pose[2]  # current heading in degrees
     prev_z = delta_z  # update previous z for next iteration
 
@@ -63,7 +63,6 @@ def estimate_pose(pose, delta_z, MM_PER_STEPS=0.296):
     # shifted pose back to lidar pose 
     x_final = x + LIDAR_WHEEL_DIST * v3[0] 
     y_final = y + LIDAR_WHEEL_DIST * v3[1]
-
     # print("Final pose:", [x_final, y_final, curr_heading])
 
     return [x_final, y_final, curr_heading]

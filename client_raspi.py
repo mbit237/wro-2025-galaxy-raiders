@@ -9,7 +9,7 @@ client = None
 def connect():
     global client
     PORT = 5050
-    SERVER = '192.168.8.189'
+    SERVER = '192.168.8.119'
     ADDR = (SERVER, PORT)
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
