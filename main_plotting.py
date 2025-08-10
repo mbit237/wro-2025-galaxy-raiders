@@ -51,9 +51,8 @@ while True:
         # client.send(lidar_measurements)
         spikes = spike.identify_spikes(lidar_measurements)
         c_spikes = spike.add_cartesian(pose, spikes)
-        matches = spike.match_landmarks(c_spikes)
-        client.send(matches)
-        print(matches)
+        # matches = spike.match_landmarks(c_spikes)
+        client.send(c_spikes)
 
 
 # print_time = time.time() + 2

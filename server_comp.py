@@ -83,8 +83,11 @@ def draw_cartesian(readings):
         x.append(reading[0])
         y.append(reading[1])
 
+    lx = [1000, 1000, 2000, 2000, 0, 0, 3000, 3000]
+    ly = [1000, 2000, 1000, 2000, 0, 3000, 0, 3000]
     ax.clear()
-    ax.scatter(x, y)
+    ax.scatter(x, y, marker="o")
+    ax.scatter(lx, ly, marker="x")
     plt.show(block=False)
     fig.canvas.draw_idle()
     fig.canvas.flush_events()
