@@ -21,11 +21,22 @@ POSITION_FILTER_RATIO = 0.1 # 0.1% confidence
 HEADING_FILTER_RATIO = 0.025  # 0.1%, if it is too low, heading error will be larger
                              # if too high, robot will jump around
 
-paths = [
-    [[500, 500], [500, 2000]], 
-    [[500, 2500], [2000, 2500]], 
-    [[2500, 2500], [2500, 1000]], 
-    [[2500, 500], [1000, 500]]
+# paths = [
+#     [[500, 500], [500, 2000]], 
+#     [[500, 2500], [2000, 2500]], 
+#     [[2500, 2500], [2500, 1000]], 
+#     [[2500, 500], [1000, 500]]
+# ]
+
+paths = [ #paths for open challenge
+    # [[500, 500], [500, 2000]], 
+    # [[500, 2500], [2000, 2500]], 
+    # [[2500, 2500], [2500, 1000]], 
+    # [[2500, 500], [1000, 500]],
+    [[300, 300], [300, 2350]],
+    [[300, 2700], [2350, 2700]],
+    [[2700, 2700], [2700, 650]],
+    [[2700, 300], [650, 300]]
 ]
 
 # pose = [600, 1600, 90] # Initial pose (mm)
@@ -190,8 +201,8 @@ index = 0
 print("Paths augmented")
 # print('start')
 
-client.connect()
-print("Client connected")
+# client.connect()
+# print("Client connected")
 
 # while True:
 #     initial_pose()
@@ -227,7 +238,7 @@ while True:
         c_spikes = spike.add_cartesian(pose, spikes)
         # print(pose, c_spikes)
         matches = spike.match_landmarks(c_spikes)
-        client.send(matches)
+        # client.send(matches)
         print(len(matches))
         while pose[2] > 180:
             pose[2] -= 360

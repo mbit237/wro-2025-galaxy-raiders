@@ -1,12 +1,45 @@
 import math
 
 
-LANDMARKS = [
-    [1000, 1000],   #first 4 landmarks are inner landmarks
+# LANDMARKS = [
+#     [1000, 1000],   #first 4 landmarks are outer landmarks
+#     [1000, 2000],
+#     [2000, 1000],
+#     [2000, 2000],
+#     [0, 0],        #last 4: inner landmarks
+#     [0, 3000],
+#     [3000, 0],
+#     [3000, 3000]
+# ]
+LANDMARKS = [ # open challenge
+    [1000, 1000],   #first 4 landmarks are outer landmarks
     [1000, 2000],
     [2000, 1000],
     [2000, 2000],
-    [0, 0],        #last 4: outer landmarks
+    [1000, 600],    # additional landmarks for open challenge
+    [600, 600],    
+    [600, 1000],    
+    [600, 2000],
+    [600, 2400],
+    [1000, 2400],
+    [2000, 2400],
+    [2400, 2400],
+    [2400, 2000],
+    [2400, 1000],
+    [2400, 600],
+    [2000, 600],
+    [0, 0],        #next 4: inner landmarks
+    [0, 3000],
+    [3000, 0],
+    [3000, 3000],
+]
+
+LANDMARKS = [ # obstacle challenge
+    [1000, 1000],   #first 4 landmarks are outer landmarks
+    [1000, 2000],
+    [2000, 1000],
+    [2000, 2000],
+    [0, 0],        #last 4: inner landmarks
     [0, 3000],
     [3000, 0],
     [3000, 3000]
@@ -25,7 +58,7 @@ def identify_spikes(measurements):
             continue
         if abs((prev_d - curr_d) + (next_d - curr_d)) > M_THRESHOLD:
             if 100 < measurements[d][1] < 1500:
-                spikes.append(measurements[d])
+                spikes.append(measurements[d])  
             
     return spikes
 

@@ -30,7 +30,7 @@ def estimate_pose(pose, delta_z, MM_PER_STEPS=0.296):
     prev_time = now
     
     #adding the change in gyro heading to previous pose heading
-    theta = (delta_z + prev_z) / 2 / 120 * delta # tune rate of rotation (131)
+    theta = (delta_z + prev_z) / 2 / 126 * delta # tune rate of rotation (131)
     curr_heading = theta + pose[2]  # current heading in degrees
     prev_z = delta_z  # update previous z for next iteration
 
