@@ -28,7 +28,7 @@ HEADING_FILTER_RATIO = 0.01  # 0.1%, if it is too low, heading error will be lar
 #     [[2500, 500], [1000, 500]]
 # ]
 
-paths = [ #paths for open challenge
+cw_paths = [ # clockwise paths for open challenge
     # [[500, 500], [500, 2000]], 
     # [[500, 2500], [2000, 2500]], 
     # [[2500, 2500], [2500, 1000]], 
@@ -37,6 +37,17 @@ paths = [ #paths for open challenge
     [[300, 2700], [2350, 2700]],
     [[2700, 2700], [2700, 650]],
     [[2700, 300], [650, 300]]
+]
+
+ccw_paths = [ # counter-clockwise paths for open challenge
+    # [[500, 500], [500, 2000]], 
+    # [[500, 2500], [2000, 2500]], 
+    # [[2500, 2500], [2500, 1000]], 
+    # [[2500, 500], [1000, 500]],
+    [[2700, 300], [2700, 2350]],
+    [[2700, 2700], [650, 2700]],
+    [[300, 2700], [300, 650]],
+    [[300, 300], [2350, 300]]
 ]
 
 obstacle_outer_paths = [
@@ -209,9 +220,6 @@ gyro = Gyro() #initialise class
 gyro.calibration()
 print("Gyro calibrated")
 
-paths = navigation.augment_paths(paths)
-index = 0
-print("Paths augmented")
 # print('start')
 
 # client.connect()
@@ -229,9 +237,18 @@ print("Paths augmented")
 
 pose = initial_pose()
 stop_y = pose[1] - 60
-# pose = [500, 500, 90] # Initial pose for testing
 print("Initial pose:", pose)
 print("angle_z =", gyro.angle_z())
+
+if pose[0] < 1500:
+    paths = cw_paths
+else:
+    paths = ccw_paths
+paths = navigation.augment_paths(paths)
+index = 0
+print("Paths augmented")
+
+# pose = [500, 500, 90] # Initial pose for testing
 # time.sleep(2)
 # count = 0
 path_count = 0
