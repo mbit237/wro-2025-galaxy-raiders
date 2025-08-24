@@ -18,7 +18,7 @@ MM_PER_STEPS = 0.296
 
 # ratios need to be tuned
 POSITION_FILTER_RATIO = 0.1 # 0.1% confidence
-HEADING_FILTER_RATIO = 0.025  # 0.1%, if it is too low, heading error will be larger
+HEADING_FILTER_RATIO = 0.01  # 0.1%, if it is too low, heading error will be larger
                              # if too high, robot will jump around
 
 # paths = [
@@ -28,16 +28,16 @@ HEADING_FILTER_RATIO = 0.025  # 0.1%, if it is too low, heading error will be la
 #     [[2500, 500], [1000, 500]]
 # ]
 
-# paths = [ #paths for open challenge
-#     # [[500, 500], [500, 2000]], 
-#     # [[500, 2500], [2000, 2500]], 
-#     # [[2500, 2500], [2500, 1000]], 
-#     # [[2500, 500], [1000, 500]],
-#     [[300, 300], [300, 2350]],
-#     [[300, 2700], [2350, 2700]],
-#     [[2700, 2700], [2700, 650]],
-#     [[2700, 300], [650, 300]]
-# ]
+paths = [ #paths for open challenge
+    # [[500, 500], [500, 2000]], 
+    # [[500, 2500], [2000, 2500]], 
+    # [[2500, 2500], [2500, 1000]], 
+    # [[2500, 500], [1000, 500]],
+    [[300, 300], [300, 2350]],
+    [[300, 2700], [2350, 2700]],
+    [[2700, 2700], [2700, 650]],
+    [[2700, 300], [650, 300]]
+]
 
 obstacle_outer_paths = [
 [[200, 200], [200, 2750]],
@@ -97,7 +97,6 @@ def initial_pose():
 
     #robot is on left side
     vote = 0
-    position = 0
     while True:
         if ldr.update():
             identified_spikes = identify_closer_spikes(ldr.get_measurements())
@@ -106,13 +105,13 @@ def initial_pose():
                     vote += 1
                 if 180 < closer_spike[0] < 360:
                     vote -= 1
-            if vote <= -10:
-                x = (left_dist + (1000 - right_dist)) / 2
+            if vote <= -10: # left side
+                x = (left_dist)
                 y = ((3000 - fwd_dist) + rear_dist) / 2
                 print("left side", "x:", x, "y:", y)
                 return [x, y, 90]
-            if vote >= 10:
-                x = ((left_dist + (1000 - right_dist)) / 2) + 2000
+            if vote >= 10: # right side
+                x = ((1000 - right_dist)) + 2000
                 y = ((3000 - fwd_dist) + rear_dist) / 2
                 print("right side", "x:", x, "y:", y)
                 return [x, y, 90]
@@ -229,11 +228,13 @@ print("Paths augmented")
     #     print(closer_spikes)
 
 pose = initial_pose()
+stop_y = pose[1] - 60
 # pose = [500, 500, 90] # Initial pose for testing
 print("Initial pose:", pose)
 print("angle_z =", gyro.angle_z())
 # time.sleep(2)
-count = 0
+# count = 0
+path_count = 0
 print('steps', drive.steps)
 reset_pose()  # Reset the pose to the initial state
 while True:
@@ -276,11 +277,17 @@ while True:
         # print(spike_heading_pose)
         merged_pose = merge_heading(merged_position_pose, spike_heading_pose)
         print("merged_position_pose:", merged_position_pose[2], "spike_heading_pose:", spike_heading_pose[2])
-        pose = merged_position_pose
-        # pose = merged_pose
+        # pose = merged_position_pose
+        pose = merged_pose
 
-    index = navigation.drive_paths(index, paths, pose, 250)
-    index %= 4
+    count = navigation.drive_paths(index, paths, pose, 250)
+    if count != index:
+        path_count += 1
+    index = count % 4
+    if path_count == 12:
+        if pose[1] >= stop_y:
+            print("Reached stopping pose")
+            break
     # if index == 3:
     #     break
 

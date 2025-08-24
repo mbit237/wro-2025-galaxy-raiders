@@ -30,8 +30,8 @@ class Gyro:
         for x in range(500):
             sum_z += self.rate_z()
             time.sleep(0.01)
-        self.error_z = sum_z / 1000
-        return sum_z/1000
+        self.error_z = sum_z / 500
+        return self.error_z
 
     def save_calibration(self, filename='gyro_calibration.txt'):
         with open(filename, 'w') as f:
