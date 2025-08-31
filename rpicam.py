@@ -42,8 +42,8 @@ def detect_blob():
         return None
 
     frame = cv2.GaussianBlur(frame, (5,5), 0)
-    g_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    g_frame = cv2.inRange(g_frame, (g_low_H, g_low_S, g_low_V), (g_high_H, g_high_S, g_high_V))
+    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    g_frame = cv2.inRange(hsv_frame, (g_low_H, g_low_S, g_low_V), (g_high_H, g_high_S, g_high_V))
     keypoints = detector.detect(g_frame) # Detects keypoints. Each keypoint will contain the x,y position, and size.
     largest_size = 0
     g_largest_keypoint = None
@@ -52,8 +52,7 @@ def detect_blob():
             largest_size = keypoint.size
             g_largest_keypoint = keypoint
     
-    r_frame = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
-    r_frame = cv2.inRange(r_frame, (r_low_H, r_low_S, r_low_V), (r_high_H, r_high_S, r_high_V))
+    r_frame = cv2.inRange(hsv_frame, (r_low_H, r_low_S, r_low_V), (r_high_H, r_high_S, r_high_V))
     keypoints = detector.detect(r_frame) # Detects keypoints. Each keypoint will contain the x,y position, and size.
     largest_size = 0
     r_largest_keypoint = None
@@ -74,6 +73,14 @@ def detect_blob():
         else:
             return "r"
 
+    frame = cv2.drawKeypoints(frame, keypoints, 0, (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    cv2.imshow('result', frame) # Display the image in a window
+
+while True:
+    detect_blob()
+    key = cv2.waitKey(30) # Wait 30ms for a key to be pressed
+    if key == ord('q'): # If 'q' was pressed, exit the loop
+        break
 
 # while True:
 #     frame = picam2.capture_array("main") # Grab one image frame from camera
