@@ -3,19 +3,19 @@ from picamera2 import Picamera2
 
 
 #green threshold
-g_low_H = 40
-g_high_H = 80
-g_low_S = 160
+g_low_H = 29
+g_high_H = 68
+g_low_S = 47
 g_high_S = 255
-g_low_V = 30
+g_low_V = 41
 g_high_V = 255
 
 #red threshold
-r_low_H = 
-r_high_H = 
-r_low_S = 160
+r_low_H = 112
+r_high_H = 138
+r_low_S = 41
 r_high_S = 255
-r_low_V = 30
+r_low_V = 114
 r_high_V = 255
 
 params = cv2.SimpleBlobDetector_Params()
