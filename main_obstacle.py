@@ -1,13 +1,13 @@
 import pigpio
 import time 
 import struct
-import math 
+import math
 # import client_raspi
 
 # import lds02rr
 import coind4
 # from compass import Compass
-from gyro import Gyro 
+from gyro import Gyro
 import drive
 import spike
 import navigation
@@ -236,7 +236,7 @@ print("Gyro calibrated")
     #     print(closer_spikes)
 
 pose = initial_pose()
-stop_y = pose[1] - 60
+stop_y = pose[1] - 50
 print("Initial pose:", pose)
 print("angle_z =", gyro.angle_z())
 
