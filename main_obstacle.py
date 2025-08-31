@@ -51,17 +51,99 @@ ccw_paths = [ # counter-clockwise paths for open challenge
 ]
 
 obstacle_outer_paths = [
-[[200, 200], [200, 2750]],
-[[200, 2800], [2750, 2800]],
-[[2800, 2800], [2800, 250]],
-[[2800, 200], [250, 200]]
+# straight path #1
+[[200, 1000], [200, 1350]],
+# check colour
+[[200, 1500], [200, 2000]],
+
+# turning point #1
+[[200, 2000], [600, 2400]],
+# check colour
+[[800, 2400], [1000, 2800]],
+# check colour
+
+# straight path #2
+[[1000, 2800], [1350, 2800]],
+# check colour
+[[1500, 2800], [2000, 2800]],
+
+# turning point #2
+[[2000, 2800], [2400, 2200]],
+# check colour
+[[2400, 2200], [2800, 2000]],
+# check colour
+
+# straight path #3
+[[2800, 2000], [2800, 1650]],
+# check colour
+[[2800, 1500], [2800, 1000]],
+
+# turning point #3
+[[2800, 1000], [2400, 600]],
+# check colour
+[[2400, 600], [2000, 200]],
+# check colour
+
+# straight path #4
+[[2000, 200], [1650, 200]],
+# check colour
+[[1500, 200], [1000, 200]],
+
+# turning point #4
+[[1000, 200], [600, 600]],
+# check colour
+[[600, 600], [200, 1000]],
+# check colour
 ]
 
 obstacle_inner_paths = [
-[[800, 800], [800, 2150]],
-[[800, 2200], [2150, 2200]],
-[[2200, 2200], [2200, 850]],
-[[2200, 800], [850, 800]]
+# straight path #1
+[[800, 1000], [800, 1350]],
+# check colour
+[[800, 1500], [800, 1850]],
+# check colour
+[[800, 1850], [800, 2000]],
+
+#turning point #1
+[[400, 2500], [400, 2500]], # have same no. of inner and outer paths, easier paths swtitcing
+# check colour
+[[400, 2500], [1000, 2200]],
+
+#straight path #2
+[[1000, 2200], [1350, 2200]],
+# check colour
+[[1500, 2200], [1850, 2200]],
+# check colour
+[[1850, 2200], [2000, 2200]],
+
+# turning point #2
+[[2000, 2200], [2000, 2200]],
+# check colour
+[[2000, 2200], [2200, 2000]],
+
+# straight path #3
+[[2200, 2000], [2200, 1650]],
+# check colour
+[[2200, 1500], [2200, 1150]],
+# check colour
+[[2200, 1150], [2200, 1000]],
+
+# turning point #3
+[[2200, 1000], [2200, 1000]],
+# check colour
+[[2200, 1000], [2000, 800]],
+
+# straight path #4
+[[2000, 800], [1650, 800]],
+# check colour
+[[1500, 800], [1150, 800]],
+# check colour
+[[1150, 800], [1000, 800]],
+
+# turning point #4
+[[1000, 800], [1000, 800]],
+# check colour
+[[1000, 800], [800, 1000]], # go back to start
 ]
 
 # pose = [600, 1600, 90] # Initial pose (mm)
@@ -99,43 +181,33 @@ def identify_closer_spikes(measurements):
     return closer_spikes
 
 
-def initial_pose():
-    # forward + backward dist, left + right dist, gyro_z
-    fwd_dist = get_distance(0)
-    left_dist = get_distance(90)
-    rear_dist = get_distance(180)
-    right_dist = get_distance(270)
+# def initial_pose():
+#     # forward + backward dist, left + right dist, gyro_z
+#     fwd_dist = get_distance(0)
+#     left_dist = get_distance(90)
+#     rear_dist = get_distance(180)
+#     right_dist = get_distance(270)
 
-    #robot is on left side
-    vote = 0
-    while True:
-        if ldr.update():
-            identified_spikes = identify_closer_spikes(ldr.get_measurements())
-            for closer_spike in identified_spikes:
-                if 0 < closer_spike[0] < 180:
-                    vote += 1
-                if 180 < closer_spike[0] < 360:
-                    vote -= 1
-            if vote <= -10: # left side
-                x = (left_dist)
-                y = ((3000 - fwd_dist) + rear_dist) / 2
-                print("left side", "x:", x, "y:", y)
-                return [x, y, 90]
-            if vote >= 10: # right side
-                x = ((1000 - right_dist)) + 2000
-                y = ((3000 - fwd_dist) + rear_dist) / 2
-                print("right side", "x:", x, "y:", y)
-                return [x, y, 90]
-    # if get_distance(360-50) > 1000 or get_distance(360-34) > 1200 or get_distance(180+35) > 1500 or get_distance(180+15) > 1000:
-    #     robot_x = (left_dist + (1000 - right_dist)) / 2           
-    #     robot_y = (rear_dist + (3000 - fwd_dist)) / 2
-    #     print("left side")
-    #     return [robot_x, robot_y, gyro.angle_z()]
-    # else: # robot is on right side
-    #     robot_x = ((left_dist + 2000) + (3000 - right_dist)) / 2
-    #     robot_y = (rear_dist + (3000 - fwd_dist)) / 2
-    #     print("right side")
-    #     return [robot_x, robot_y, gyro.angle_z()]
+#     #robot is on left side
+#     vote = 0
+#     while True:
+#         if ldr.update():
+#             identified_spikes = identify_closer_spikes(ldr.get_measurements())
+#             for closer_spike in identified_spikes:
+#                 if 0 < closer_spike[0] < 180:
+#                     vote += 1
+#                 if 180 < closer_spike[0] < 360:
+#                     vote -= 1
+#             if vote <= -10: # left side
+#                 x = (left_dist)
+#                 y = ((3000 - fwd_dist) + rear_dist) / 2
+#                 print("left side", "x:", x, "y:", y)
+#                 return [x, y, 90]
+#             if vote >= 10: # right side
+#                 x = ((1000 - right_dist)) + 2000
+#                 y = ((3000 - fwd_dist) + rear_dist) / 2
+#                 print("right side", "x:", x, "y:", y)
+#                 return [x, y, 90]
 
 def calc_position_error(matches):
     if not matches:  # Handle empty matches list
@@ -235,7 +307,7 @@ print("Gyro calibrated")
     #     closer_spikes = identify_closer_spikes(lidar_measurements)
     #     print(closer_spikes)
 
-pose = initial_pose()
+pose = [100, 1023, 90]
 stop_y = pose[1] - 50
 print("Initial pose:", pose)
 print("angle_z =", gyro.angle_z())
@@ -254,6 +326,7 @@ print("Paths augmented")
 path_count = 0
 print('steps', drive.steps)
 reset_pose()  # Reset the pose to the initial state
+
 while True:
     pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
     # print("Pose:", pose)
@@ -298,6 +371,7 @@ while True:
         pose = merged_pose
 
     count = navigation.drive_paths(index, paths, pose, 250)
+
     if count != index:
         path_count += 1
     index = count % 4
@@ -343,3 +417,10 @@ drive.drive(0)  # Stop the robot by setting speed to 0
 
 # Close handle 
 # pi.close() -- check 
+
+'''
+if red:
+    if path count
+else:
+    switch to outer path
+'''

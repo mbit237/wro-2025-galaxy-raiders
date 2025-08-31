@@ -19,7 +19,7 @@ MM_PER_STEPS = 0.296
 # ratios need to be tuned
 POSITION_FILTER_RATIO = 0.1 # 0.1% confidence
 HEADING_FILTER_RATIO = 0.01  # 0.1%, if it is too low, heading error will be larger
-                             # if too high, robot will jump around
+                            # if too high, robot will jump around
 
 # paths = [
 #     [[500, 500], [500, 2000]], 
