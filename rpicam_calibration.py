@@ -87,7 +87,7 @@ while True:
     if frame is None:
         break
     print(4)
-    frame = cv.cvtColor(frame, cv.COLOR_RGB2BGR)
+    frame = cv.cvtColor(frame, cv.COLOR_RGB2HSV)
     # frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
     frame_threshold = cv.inRange(frame, (low_H, low_S, low_V), (high_H, high_S, high_V))
 

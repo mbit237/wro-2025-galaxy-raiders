@@ -150,7 +150,7 @@ obstacle_inner_paths = [
 
 
 
-# Test motor encoder
+# Test motor encoder  
 # drive.drive(155)
 # time.sleep(3)
 # drive.drive(0)
