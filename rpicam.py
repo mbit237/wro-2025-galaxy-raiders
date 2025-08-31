@@ -22,9 +22,9 @@ params = cv2.SimpleBlobDetector_Params()
 params.filterByColor = True
 params.blobColor = 255 # Detect white blobs. If set to 0, it'll detect black blobs.
 params.filterByArea = True
-params.minArea = 1000
+params.minArea = 250
 params.maxArea = 100000
-params.filterByCircularity = False
+params.filterByCircularity = True
 params.minCircularity = 0.1
 params.filterByConvexity = False
 params.minConvexity = 0.87
@@ -33,7 +33,7 @@ params.minInertiaRatio = 0.01
 
 detector = cv2.SimpleBlobDetector_create(params)
 
-picam2 = Picamera2()
+picam2 = Picamera2() # default resolution - 640x480
 picam2.start() # Change the number to select a different camera
 
 def detect_blob():
@@ -41,6 +41,7 @@ def detect_blob():
     if frame is None:
         return None
 
+    frame = frame[63:-80,0:-1]
     frame = cv2.GaussianBlur(frame, (5,5), 0)
     hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     g_frame = cv2.inRange(hsv_frame, (g_low_H, g_low_S, g_low_V), (g_high_H, g_high_S, g_high_V))
@@ -60,7 +61,11 @@ def detect_blob():
         if keypoint.size > largest_size:
             largest_size = keypoint.size
             r_largest_keypoint = keypoint
+
+    frame = cv2.drawKeypoints(frame, keypoints, 0, (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    cv2.imshow('result', frame) # Display the image in a window
     
+
     if g_largest_keypoint is None and r_largest_keypoint is None:
         return None
     elif g_largest_keypoint is None:
@@ -73,11 +78,8 @@ def detect_blob():
         else:
             return "r"
 
-    frame = cv2.drawKeypoints(frame, keypoints, 0, (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-    cv2.imshow('result', frame) # Display the image in a window
-
 while True:
-    detect_blob()
+    print(detect_blob())
     key = cv2.waitKey(30) # Wait 30ms for a key to be pressed
     if key == ord('q'): # If 'q' was pressed, exit the loop
         break
