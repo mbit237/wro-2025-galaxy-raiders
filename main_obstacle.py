@@ -13,6 +13,7 @@ import spike
 import navigation
 from estimate_pose import estimate_pose, reset_pose
 import client_raspi as client
+import rpicam
 
 MM_PER_STEPS = 0.296
 
@@ -52,100 +53,98 @@ ccw_paths = [ # counter-clockwise paths for open challenge
 
 obstacle_outer_paths = [
 # straight path #1
-[[200, 1000], [200, 1350]],
+[[200, 1000], [200, 1350], 1],
 # check colour
-[[200, 1500], [200, 2000]],
+[[200, 1500], [200, 2000], 0],
 
 # turning point #1
-[[200, 2000], [600, 2400]],
+[[200, 2000], [600, 2400], 1],
 # check colour
-[[800, 2400], [1000, 2800]],
+[[800, 2400], [1000, 2800], 1],
 # check colour
 
 # straight path #2
-[[1000, 2800], [1350, 2800]],
+[[1000, 2800], [1350, 2800], 1],
 # check colour
-[[1500, 2800], [2000, 2800]],
+[[1500, 2800], [2000, 2800], 0],
 
 # turning point #2
-[[2000, 2800], [2400, 2200]],
+[[2000, 2800], [2400, 2200], 1],
 # check colour
-[[2400, 2200], [2800, 2000]],
+[[2400, 2200], [2800, 2000], 1],
 # check colour
 
 # straight path #3
-[[2800, 2000], [2800, 1650]],
+[[2800, 2000], [2800, 1650], 1],
 # check colour
-[[2800, 1500], [2800, 1000]],
+[[2800, 1500], [2800, 1000], 0],
 
 # turning point #3
-[[2800, 1000], [2400, 600]],
+[[2800, 1000], [2400, 600], 1],
 # check colour
-[[2400, 600], [2000, 200]],
+[[2400, 600], [2000, 200], 1],
 # check colour
 
 # straight path #4
-[[2000, 200], [1650, 200]],
+[[2000, 200], [1650, 200], 1],
 # check colour
-[[1500, 200], [1000, 200]],
+[[1500, 200], [1000, 200], 0],
 
 # turning point #4
-[[1000, 200], [600, 600]],
+[[1000, 200], [600, 600], 1],
 # check colour
-[[600, 600], [200, 1000]],
+[[600, 600], [200, 1000], 1],
 # check colour
 ]
 
 obstacle_inner_paths = [
 # straight path #1
-[[800, 1000], [800, 1350]],
+[[800, 1000], [800, 1350], 1],
 # check colour
-[[800, 1500], [800, 1850]],
+[[800, 1500], [800, 1850], 1],
 # check colour
-[[800, 1850], [800, 2000]],
 
 #turning point #1
-[[400, 2500], [400, 2500]], # have same no. of inner and outer paths, easier paths swtitcing
+[[400, 2500], [400, 2500], 1], # have same no. of inner and outer paths, easier paths swtitcing
 # check colour
-[[400, 2500], [1000, 2200]],
+[[400, 2500], [1000, 2200], 0],
 
 #straight path #2
-[[1000, 2200], [1350, 2200]],
+[[1000, 2200], [1350, 2200], 1],
 # check colour
-[[1500, 2200], [1850, 2200]],
+[[1500, 2200], [1850, 2200], 1],
 # check colour
-[[1850, 2200], [2000, 2200]],
 
 # turning point #2
-[[2000, 2200], [2000, 2200]],
+[[2000, 2200], [2000, 2200], 1],
 # check colour
-[[2000, 2200], [2200, 2000]],
+[[2000, 2200], [2200, 2000], 0],
 
 # straight path #3
-[[2200, 2000], [2200, 1650]],
+[[2200, 2000], [2200, 1650], 1],
 # check colour
-[[2200, 1500], [2200, 1150]],
+[[2200, 1500], [2200, 1150], 1],
 # check colour
-[[2200, 1150], [2200, 1000]],
 
 # turning point #3
-[[2200, 1000], [2200, 1000]],
+[[2200, 1000], [2200, 1000], 1],
 # check colour
-[[2200, 1000], [2000, 800]],
+[[2200, 1000], [2000, 800], 0],
 
 # straight path #4
-[[2000, 800], [1650, 800]],
+[[2000, 800], [1650, 800], 1],
 # check colour
-[[1500, 800], [1150, 800]],
+[[1500, 800], [1150, 800], 1],
 # check colour
-[[1150, 800], [1000, 800]],
 
 # turning point #4
-[[1000, 800], [1000, 800]],
+[[1000, 800], [1000, 800], 1],
 # check colour
-[[1000, 800], [800, 1000]], # go back to start
+[[1000, 800], [800, 1000], 0], # go back to start
+
 ]
 
+paths = obstacle_inner_paths
 # pose = [600, 1600, 90] # Initial pose (mm)
 
 
@@ -374,8 +373,17 @@ while True:
 
     if count != index:
         path_count += 1
-    index = count % 4
-    if path_count == 12:
+        if path[2] == 1:
+            colour = detect_blob()
+            if colour == 'r':
+                paths = obstacle_inner_paths
+            elif colour == 'g':
+                paths = obstacle_outer_paths
+        elif path[2] == 0:
+            continue
+
+    index = count % 16
+    if path_count == 16:
         if pose[1] >= stop_y:
             print("Reached stopping pose")
             break
