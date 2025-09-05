@@ -63,7 +63,7 @@ def detect_blob():
             r_largest_keypoint = keypoint
 
     frame = cv2.drawKeypoints(frame, keypoints, 0, (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-    cv2.imshow('result', frame) # Display the image in a window
+    # cv2.imshow('result', frame) # Display the image in a window, for testing
     
 
     if g_largest_keypoint is None and r_largest_keypoint is None:
@@ -78,11 +78,11 @@ def detect_blob():
         else:
             return "r"
 
-while True:
-    print(detect_blob())
-    key = cv2.waitKey(30) # Wait 30ms for a key to be pressed
-    if key == ord('q'): # If 'q' was pressed, exit the loop
-        break
+# while True:
+#     print(detect_blob())
+#     key = cv2.waitKey(30) # Wait 30ms for a key to be pressed
+#     if key == ord('q'): # If 'q' was pressed, exit the loop
+#         break
 
 # while True:
 #     frame = picam2.capture_array("main") # Grab one image frame from camera
