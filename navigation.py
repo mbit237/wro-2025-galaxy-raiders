@@ -2,6 +2,7 @@ import math
 import drive
 
 PATH_GAIN = -0.2
+MAX_ANGLE = 30
 
 def augment_path(path):
     dx = path[1][0] - path[0][0]
@@ -37,10 +38,10 @@ def drive_path(path, pose, speed):
     err = dot(path[5], robot_vec) # how far off the robot is (in mm)
     corr = err * PATH_GAIN 
     # Limit correction
-    if corr > 30:
-        corr = 30
-    elif corr < -30:
-        corr = -30
+    if corr > MAX_ANGLE:
+        corr = MAX_ANGLE
+    elif corr < -MAX_ANGLE:
+        corr = -MAX_ANGLE
 
     target_dir += corr 
     # print(f"Target direction: {target_dir}, gyro: {pose}")

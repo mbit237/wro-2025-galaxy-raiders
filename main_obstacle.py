@@ -23,6 +23,7 @@ HEADING_FILTER_RATIO = 0.01  # 0.1%, if it is too low, heading error will be lar
                              # if too high, robot will jump around
 
 navigation.PATH_GAIN = -0.5
+navigation.MAX_ANGLE = 60
 
 # paths = [
 #     [[500, 500], [500, 2000]], 
@@ -60,13 +61,13 @@ obstacle_outer_paths = [
 [[200, 1500], [200, 2000]],
 
 # turning point #1
-[[200, 2000], [600, 2400]],
+[[200, 2000], [420, 2400]],
 # check colour
-[[800, 2400], [1000, 2800]],
+[[600, 2400], [600, 2450]],
 # check colour
 
-# straight path #2
-[[1000, 2800], [1350, 2800]],
+# top path #2
+[[800, 2800], [2350, 2800]],
 # check colour
 [[1500, 2800], [2000, 2800]],
 
@@ -76,7 +77,7 @@ obstacle_outer_paths = [
 [[2400, 2200], [2800, 2000]],
 # check colour
 
-# straight path #3
+# right path #3
 [[2800, 2000], [2800, 1650]],
 # check colour
 [[2800, 1500], [2800, 1000]],
@@ -87,7 +88,7 @@ obstacle_outer_paths = [
 [[2400, 600], [2000, 200]],
 # check colour
 
-# straight path #4
+# bottom path #4
 [[2000, 200], [1650, 200]],
 # check colour
 [[1500, 200], [1000, 200]],
@@ -103,13 +104,13 @@ obstacle_inner_paths = [
 # straight path #1
 [[800, 1000], [800, 1350]],
 # check colour
-[[800, 1500], [800, 1850]],
+[[800, 1500], [800, 2000]],
 # check colour
 
 #turning point #1
-[[800, 1850], [800, 2000]], # have same no. of inner and outer paths, easier paths swtitcing
+[[800, 2200], [810, 2200]], # have same no. of inner and outer paths, easier paths swtitcing
 # check colour
-[[800, 2000], [1000, 2200]],
+[[820, 2200], [2350, 2200]],
 
 #straight path #2
 [[1000, 2200], [1350, 2200]],
@@ -380,7 +381,7 @@ while True:
                 paths = obstacle_outer_paths
 
     index = count % 16
-    if path_count == 8:
+    if path_count == 5:
         if pose[1] >= stop_y:
             print("Reached stopping pose")
             break
