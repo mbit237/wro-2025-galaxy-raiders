@@ -358,14 +358,14 @@ while True:
         #         count = 0
         position_error = calc_position_error(matches)
         spike_pose = calc_pose(pose, position_error)
-        print("Pose after position error:", spike_pose)
+        # print("Pose after position error:", spike_pose)
         merged_position_pose = merge_positions(pose, spike_pose)
         angle_error = calc_angle_error(merged_position_pose, matches)
         # print(angle_error)
         spike_heading_pose = calc_heading(merged_position_pose, angle_error)
         # print(spike_heading_pose)
         merged_pose = merge_heading(merged_position_pose, spike_heading_pose)
-        print("merged_position_pose:", merged_position_pose[2], "spike_heading_pose:", spike_heading_pose[2])
+        # print("merged_position_pose:", merged_position_pose[2], "spike_heading_pose:", spike_heading_pose[2])
         # pose = merged_position_pose
         pose = merged_pose
 
