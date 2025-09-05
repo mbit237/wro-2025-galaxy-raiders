@@ -62,7 +62,7 @@ def detect_blob():
             largest_size = keypoint.size
             r_largest_keypoint = keypoint
 
-    frame = cv2.drawKeypoints(frame, keypoints, 0, (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    # frame = cv2.drawKeypoints(frame, keypoints, 0, (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     # cv2.imshow('result', frame) # Display the image in a window, for testing
     
 
@@ -78,6 +78,7 @@ def detect_blob():
         else:
             return "r"
 
+# print(detect_blob())
 # while True:
 #     print(detect_blob())
 #     key = cv2.waitKey(30) # Wait 30ms for a key to be pressed

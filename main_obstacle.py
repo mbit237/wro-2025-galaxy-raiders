@@ -22,6 +22,8 @@ POSITION_FILTER_RATIO = 0.1 # 0.1% confidence
 HEADING_FILTER_RATIO = 0.01  # 0.1%, if it is too low, heading error will be larger
                              # if too high, robot will jump around
 
+navigation.PATH_GAIN = -0.5
+
 # paths = [
 #     [[500, 500], [500, 2000]], 
 #     [[500, 2500], [2000, 2500]], 
@@ -53,95 +55,94 @@ ccw_paths = [ # counter-clockwise paths for open challenge
 
 obstacle_outer_paths = [
 # straight path #1
-[[200, 1000], [200, 1350], 1],
+[[200, 1000], [200, 1350]],
 # check colour
-[[200, 1500], [200, 2000], 0],
+[[200, 1500], [200, 2000]],
 
 # turning point #1
-[[200, 2000], [600, 2400], 1],
+[[200, 2000], [600, 2400]],
 # check colour
-[[800, 2400], [1000, 2800], 1],
+[[800, 2400], [1000, 2800]],
 # check colour
 
 # straight path #2
-[[1000, 2800], [1350, 2800], 1],
+[[1000, 2800], [1350, 2800]],
 # check colour
-[[1500, 2800], [2000, 2800], 0],
+[[1500, 2800], [2000, 2800]],
 
 # turning point #2
-[[2000, 2800], [2400, 2200], 1],
+[[2000, 2800], [2400, 2200]],
 # check colour
-[[2400, 2200], [2800, 2000], 1],
+[[2400, 2200], [2800, 2000]],
 # check colour
 
 # straight path #3
-[[2800, 2000], [2800, 1650], 1],
+[[2800, 2000], [2800, 1650]],
 # check colour
-[[2800, 1500], [2800, 1000], 0],
+[[2800, 1500], [2800, 1000]],
 
 # turning point #3
-[[2800, 1000], [2400, 600], 1],
+[[2800, 1000], [2400, 600]],
 # check colour
-[[2400, 600], [2000, 200], 1],
+[[2400, 600], [2000, 200]],
 # check colour
 
 # straight path #4
-[[2000, 200], [1650, 200], 1],
+[[2000, 200], [1650, 200]],
 # check colour
-[[1500, 200], [1000, 200], 0],
+[[1500, 200], [1000, 200]],
 
 # turning point #4
-[[1000, 200], [600, 600], 1],
+[[1000, 200], [600, 600]],
 # check colour
-[[600, 600], [200, 1000], 1],
+[[600, 600], [200, 1000]],
 # check colour
 ]
 
 obstacle_inner_paths = [
 # straight path #1
-[[800, 1000], [800, 1350], 1],
+[[800, 1000], [800, 1350]],
 # check colour
-[[800, 1500], [800, 1850], 1],
+[[800, 1500], [800, 1850]],
 # check colour
 
 #turning point #1
-[[400, 2500], [400, 2500], 1], # have same no. of inner and outer paths, easier paths swtitcing
+[[800, 1850], [800, 2000]], # have same no. of inner and outer paths, easier paths swtitcing
 # check colour
-[[400, 2500], [1000, 2200], 0],
+[[800, 2000], [1000, 2200]],
 
 #straight path #2
-[[1000, 2200], [1350, 2200], 1],
+[[1000, 2200], [1350, 2200]],
 # check colour
-[[1500, 2200], [1850, 2200], 1],
+[[1500, 2200], [1850, 2200]],
 # check colour
 
 # turning point #2
-[[2000, 2200], [2000, 2200], 1],
+[[1850, 2200], [2000, 2200]],
 # check colour
-[[2000, 2200], [2200, 2000], 0],
+[[2000, 2200], [2200, 2000]],
 
 # straight path #3
-[[2200, 2000], [2200, 1650], 1],
+[[2200, 2000], [2200, 1650]],
 # check colour
-[[2200, 1500], [2200, 1150], 1],
+[[2200, 1500], [2200, 1150]],
 # check colour
 
 # turning point #3
-[[2200, 1000], [2200, 1000], 1],
+[[2200, 1150], [2200, 1000]],
 # check colour
-[[2200, 1000], [2000, 800], 0],
+[[2200, 1000], [2000, 800]],
 
 # straight path #4
-[[2000, 800], [1650, 800], 1],
+[[2000, 800], [1650, 800]],
 # check colour
-[[1500, 800], [1150, 800], 1],
+[[1500, 800], [1150, 800]],
 # check colour
 
 # turning point #4
-[[1000, 800], [1000, 800], 1],
+[[1150, 800], [1000, 800]],
 # check colour
-[[1000, 800], [800, 1000], 0], # go back to start
-
+[[1000, 800], [800, 1000]], # go back to start
 ]
 
 paths = obstacle_inner_paths
@@ -180,33 +181,33 @@ def identify_closer_spikes(measurements):
     return closer_spikes
 
 
-# def initial_pose():
-#     # forward + backward dist, left + right dist, gyro_z
-#     fwd_dist = get_distance(0)
-#     left_dist = get_distance(90)
-#     rear_dist = get_distance(180)
-#     right_dist = get_distance(270)
+def initial_pose():
+    # forward + backward dist, left + right dist, gyro_z
+    fwd_dist = get_distance(0)
+    left_dist = get_distance(90)
+    rear_dist = get_distance(180)
+    right_dist = get_distance(270)
 
-#     #robot is on left side
-#     vote = 0
-#     while True:
-#         if ldr.update():
-#             identified_spikes = identify_closer_spikes(ldr.get_measurements())
-#             for closer_spike in identified_spikes:
-#                 if 0 < closer_spike[0] < 180:
-#                     vote += 1
-#                 if 180 < closer_spike[0] < 360:
-#                     vote -= 1
-#             if vote <= -10: # left side
-#                 x = (left_dist)
-#                 y = ((3000 - fwd_dist) + rear_dist) / 2
-#                 print("left side", "x:", x, "y:", y)
-#                 return [x, y, 90]
-#             if vote >= 10: # right side
-#                 x = ((1000 - right_dist)) + 2000
-#                 y = ((3000 - fwd_dist) + rear_dist) / 2
-#                 print("right side", "x:", x, "y:", y)
-#                 return [x, y, 90]
+    #robot is on left side
+    vote = 0
+    while True:
+        if ldr.update():
+            identified_spikes = identify_closer_spikes(ldr.get_measurements())
+            for closer_spike in identified_spikes:
+                if 0 < closer_spike[0] < 180:
+                    vote += 1
+                if 180 < closer_spike[0] < 360:
+                    vote -= 1
+            if vote <= -10: # left side
+                x = (left_dist)
+                y = ((3000 - fwd_dist) + rear_dist) / 2
+                print("left side", "x:", x, "y:", y)
+                return [x, y, 90]
+            if vote >= 10: # right side
+                x = ((1000 - right_dist)) + 2000
+                y = ((3000 - fwd_dist) + rear_dist) / 2
+                print("right side", "x:", x, "y:", y)
+                return [x, y, 90]
 
 def calc_position_error(matches):
     if not matches:  # Handle empty matches list
@@ -306,16 +307,13 @@ print("Gyro calibrated")
     #     closer_spikes = identify_closer_spikes(lidar_measurements)
     #     print(closer_spikes)
 
-pose = [100, 1023, 90]
+pose = initial_pose() # Initial pose (mm)
 stop_y = pose[1] - 50
 print("Initial pose:", pose)
 print("angle_z =", gyro.angle_z())
 
-if pose[0] < 1500:
-    paths = cw_paths
-else:
-    paths = ccw_paths
-paths = navigation.augment_paths(paths)
+obstacle_outer_paths = navigation.augment_paths(obstacle_outer_paths)
+obstacle_inner_paths = navigation.augment_paths(obstacle_inner_paths)
 index = 0
 print("Paths augmented")
 
@@ -373,18 +371,16 @@ while True:
 
     if count != index:
         path_count += 1
-        if paths[index][2] == 1:
+        if 1 == 1:
             colour = rpicam.detect_blob()
             print("colour", colour)
             if colour == 'r':
                 paths = obstacle_inner_paths
             elif colour == 'g':
                 paths = obstacle_outer_paths
-        elif paths[index][2] == 0:
-            continue
 
     index = count % 16
-    if path_count == 1:
+    if path_count == 8:
         if pose[1] >= stop_y:
             print("Reached stopping pose")
             break
