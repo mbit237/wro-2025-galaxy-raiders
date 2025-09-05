@@ -375,6 +375,7 @@ while True:
         path_count += 1
         if paths[index][2] == 1:
             colour = rpicam.detect_blob()
+            print("colour", colour)
             if colour == 'r':
                 paths = obstacle_inner_paths
             elif colour == 'g':
@@ -383,7 +384,7 @@ while True:
             continue
 
     index = count % 16
-    if path_count == 16:
+    if path_count == 1:
         if pose[1] >= stop_y:
             print("Reached stopping pose")
             break
