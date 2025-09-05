@@ -373,13 +373,13 @@ while True:
 
     if count != index:
         path_count += 1
-        if path[2] == 1:
-            colour = detect_blob()
+        if paths[index][2] == 1:
+            colour = rpicam.detect_blob()
             if colour == 'r':
                 paths = obstacle_inner_paths
             elif colour == 'g':
                 paths = obstacle_outer_paths
-        elif path[2] == 0:
+        elif paths[index][2] == 0:
             continue
 
     index = count % 16
