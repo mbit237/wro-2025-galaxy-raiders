@@ -1,5 +1,8 @@
 import pigpio
 
+STEER_MAX = 45
+CENTER = 45
+
 #GPIO20, GPIO21
 
 pi = pigpio.pi()
@@ -14,11 +17,11 @@ def drive(speed): # 0-255
         pi.set_PWM_dutycycle(21, 255+speed)
 
 def steering(dir):
-    if dir < -45:
-        dir = -45
-    elif dir > 45:
-        dir = 45
-    pulse_duration = 1340 + (80 / 9) *(dir + 45) - 400
+    if dir < -STEER_MAX:
+        dir = -STEER_MAX
+    elif dir > STEER_MAX:
+        dir = STEER_MAX
+    pulse_duration = 1340 + (80 / 9) *(dir + CENTER) - 400
     pi.set_servo_pulsewidth(23, pulse_duration)
 
 steps = 0

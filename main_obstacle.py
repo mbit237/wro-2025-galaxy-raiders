@@ -24,6 +24,8 @@ HEADING_FILTER_RATIO = 0.01  # 0.1%, if it is too low, heading error will be lar
 
 navigation.PATH_GAIN = -0.5
 navigation.MAX_ANGLE = 60
+drive.STEER_MAX = 45
+drive.CENTER = 50
 
 # paths = [
 #     [[500, 500], [500, 2000]], 
@@ -61,31 +63,31 @@ obstacle_outer_paths = [
 [[200, 1500], [200, 2000]],
 
 # turning point #1
-[[200, 2000], [420, 2400]],
+[[200, 2000], [600, 2200]],
 # check colour
-[[600, 2400], [600, 2450]],
+[[700, 2400], [700, 2450]],
 # check colour
 
 # top path #2
-[[800, 2800], [2350, 2800]],
+[[1000, 2800], [1350, 2800]],
 # check colour
 [[1500, 2800], [2000, 2800]],
 
 # turning point #2
-[[2000, 2800], [2400, 2200]],
+[[2000, 2800], [2200, 2400]],
 # check colour
-[[2400, 2200], [2800, 2000]],
+[[2400, 2300], [2450, 2300]],
 # check colour
 
 # right path #3
-[[2800, 2000], [2800, 1650]],
+[[2800, 2000], [2800, 1550]],
 # check colour
 [[2800, 1500], [2800, 1000]],
 
 # turning point #3
-[[2800, 1000], [2400, 600]],
+[[2800, 1000], [2400, 800]],
 # check colour
-[[2400, 600], [2000, 200]],
+[[2300, 600], [2300, 550]],
 # check colour
 
 # bottom path #4
@@ -94,9 +96,9 @@ obstacle_outer_paths = [
 [[1500, 200], [1000, 200]],
 
 # turning point #4
-[[1000, 200], [600, 600]],
+[[1000, 200], [800, 600]],
 # check colour
-[[600, 600], [200, 1000]],
+[[600, 700], [550, 700]],
 # check colour
 ]
 
@@ -108,43 +110,138 @@ obstacle_inner_paths = [
 # check colour
 
 #turning point #1
-[[800, 2200], [810, 2200]], # have same no. of inner and outer paths, easier paths swtitcing
+[[800, 2200], [850, 2200]],
+[[850, 2200], [900, 2200]], # have same no. of inner and outer paths, easier paths swtitcing
 # check colour
-[[820, 2200], [2350, 2200]],
+[[1000, 2200], [1350, 2200]],
 
 #straight path #2
-[[1000, 2200], [1350, 2200]],
+[[1350, 2200], [2000, 2200]],
 # check colour
 [[1500, 2200], [1850, 2200]],
 # check colour
 
 # turning point #2
-[[1850, 2200], [2000, 2200]],
+[[2200, 2200], [2200, 2150]],
+[[2200, 2150], [2200, 2100]],
 # check colour
-[[2000, 2200], [2200, 2000]],
+[[2200, 2000], [2100, 1550]],
 
 # straight path #3
-[[2200, 2000], [2200, 1650]],
+[[2200, 1300], [2200, 1000]],
 # check colour
-[[2200, 1500], [2200, 1150]],
+[[2200, 800], [2100, 800]],
 # check colour
 
 # turning point #3
-[[2200, 1150], [2200, 1000]],
-# check colour
-[[2200, 1000], [2000, 800]],
-
-# straight path #4
 [[2000, 800], [1650, 800]],
 # check colour
-[[1500, 800], [1150, 800]],
+[[1500, 800], [1000, 800]],
+
+# straight path #4
+[[800, 800], [850, 800]],
+[[850, 800], [900, 800]],
+# check colour
+
 # check colour
 
 # turning point #4
-[[1150, 800], [1000, 800]],
+
 # check colour
-[[1000, 800], [800, 1000]], # go back to start
+ # go back to start
 ]
+
+# obstacle_outer_paths = [
+# # straight path #1
+# [[200, 1000], [200, 1350]],
+# # check colour
+# [[200, 1500], [200, 2000]],
+
+# # turning point #1
+# [[200, 2000], [600, 2200]],
+# # check colour
+# [[700, 2400], [700, 2450]],
+# # check colour
+
+# # top path #2
+# [[800, 2800], [1350, 2800]],
+# # check colour
+# [[1500, 2800], [2000, 2800]],
+
+# # turning point #2
+# [[2000, 2800], [2400, 2200]],
+# # check colour
+# [[2400, 2200], [2800, 2000]],
+# # check colour
+
+# # right path #3
+# [[2800, 2000], [2800, 1650]],
+# # check colour
+# [[2800, 1500], [2800, 1000]],
+
+# # turning point #3
+# [[2800, 1000], [2400, 600]],
+# # check colour
+# [[2400, 600], [2000, 200]],
+# # check colour
+
+# # bottom path #4
+# [[2000, 200], [1650, 200]],
+# # check colour
+# [[1500, 200], [1000, 200]],
+
+# # turning point #4
+# [[1000, 200], [600, 600]],
+# # check colour
+# [[600, 600], [200, 1000]],
+# # check colour
+# ]
+
+# obstacle_inner_paths = [
+# # straight path #1
+# [[800, 1000], [800, 1350]],
+# # check colour
+# [[800, 1500], [800, 2000]],
+# # check colour
+
+# #turning point #1
+# [[800, 2200], [900, 2200]], # have same no. of inner and outer paths, easier paths swtitcing
+# # check colour
+# [[1000, 2200], [1350, 2200]],
+
+# #straight path #2
+# [[1350, 2200], [2000, 2200]],
+# # check colour
+# [[1500, 2200], [1850, 2200]],
+# # check colour
+
+# # turning point #2
+# [[1850, 2200], [2000, 2200]],
+# # check colour
+# [[2000, 2200], [2200, 2000]],
+
+# # straight path #3
+# [[2200, 2000], [2200, 1650]],
+# # check colour
+# [[2200, 1500], [2200, 1150]],
+# # check colour
+
+# # turning point #3
+# [[2200, 1150], [2200, 1000]],
+# # check colour
+# [[2200, 1000], [2000, 800]],
+
+# # straight path #4
+# [[2000, 800], [1650, 800]],
+# # check colour
+# [[1500, 800], [1150, 800]],
+# # check colour
+
+# # turning point #4
+# [[1150, 800], [1000, 800]],
+# # check colour
+# [[1000, 800], [800, 1000]], # go back to start
+# ]
 
 paths = obstacle_inner_paths
 # pose = [600, 1600, 90] # Initial pose (mm)
@@ -379,9 +476,10 @@ while True:
                 paths = obstacle_inner_paths
             elif colour == 'g':
                 paths = obstacle_outer_paths
+        print('path', paths[count % len(paths)])
 
     index = count % 16
-    if path_count == 5:
+    if path_count == 16:
         if pose[1] >= stop_y:
             print("Reached stopping pose")
             break
