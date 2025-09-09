@@ -299,3 +299,4 @@ while True:
         break
 
 drive.drive(0)  
+drive.steering(0)  
