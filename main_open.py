@@ -193,6 +193,9 @@ def merge_heading(merged_position_pose, spike_pose):
     merged_angle = angle_z * (1 - HEADING_FILTER_RATIO) + spike_z * HEADING_FILTER_RATIO
     return [merged_position_pose[0], merged_position_pose[1], merged_angle]
 
+pi = pigpio.pi()
+pi.set_mode(17, pigpio.INPUT)
+pi.set_pull_up_down(17, pigpio.PUD_UP)
 print('steps', drive.steps)
 # while True:
 #     if ldr.update():
@@ -291,5 +294,8 @@ while True:
         if pose[1] >= stop_y:
             print("Reached stopping pose")
             break
+
+    if pi.read(17) == 0:
+        break
 
 drive.drive(0)  
