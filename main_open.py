@@ -193,140 +193,103 @@ def merge_heading(merged_position_pose, spike_pose):
     merged_angle = angle_z * (1 - HEADING_FILTER_RATIO) + spike_z * HEADING_FILTER_RATIO
     return [merged_position_pose[0], merged_position_pose[1], merged_angle]
 
-def main():
-
-
-    print('steps', drive.steps)
-    # while True:
-    #     if ldr.update():
-    #         break
-    # print('cleared')
-    ldr = coind4.CoinD4() #lidar initialise
-    ldr.start()
-    print("Lidar started")
-    # compass = Compass()
-    gyro = Gyro() #initialise class
-    gyro.calibration()
-    print("Gyro calibrated")
-
-    # print('start')
-
-    # client.connect()
-    # print("Client connected")
-
-    # while True:
-    #     initial_pose()
-    #     print('done')
-        # pose = estimate_pose(initial_pose(), gyro.delta_z(), MM_PER_STEPS)
-        # if ldr.update():
-        #     print("working")
-        #     lidar_measurements = ldr.get_measurements()
-        #     closer_spikes = identify_closer_spikes(lidar_measurements)
-        #     print(closer_spikes)
-
-    pose = initial_pose()
-    stop_y = pose[1] - 50
-    print("Initial pose:", pose)
-    print("angle_z =", gyro.angle_z())
-
-    if pose[0] < 1500:
-        paths = cw_paths
-    else:
-        paths = ccw_paths
-    paths = navigation.augment_paths(paths)
-    index = 0
-    print("Paths augmented")
-
-    # pose = [500, 500, 90] # Initial pose for testing
-    # time.sleep(2)
-    # count = 0
-    path_count = 0
-    print('steps', drive.steps)
-    reset_pose()  # Reset the pose to the initial state
-    while True:
-        pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
-        # print("Pose:", pose)
-        if ldr.update():
-            # print("working", time.time())
-            lidar_measurements = ldr.get_measurements()
-            # for l in lidar_measurements:
-            #     print(l)
-            # print(len(lidar_measurements))
-            # break
-            #spike detection
-            spikes = spike.identify_spikes(lidar_measurements)
-            # print(spikes)
-            c_spikes = spike.add_cartesian(pose, spikes)
-            # print(pose, c_spikes)
-            matches = spike.match_landmarks(c_spikes)
-            # client.send(matches)
-            print(len(matches))
-            while pose[2] > 180:
-                pose[2] -= 360
-            while pose[2] < -180:
-                pose[2] += 360
-            print(pose, matches)
-            
-            # if len(matches) == 0:
-            #     count += 1
-            #     if count > 5:
-            #         drive.drive(0)
-            #         time.sleep(20)
-            #         count = 0
-            position_error = calc_position_error(matches)
-            spike_pose = calc_pose(pose, position_error)
-            print("Pose after position error:", spike_pose)
-            merged_position_pose = merge_positions(pose, spike_pose)
-            angle_error = calc_angle_error(merged_position_pose, matches)
-            # print(angle_error)
-            spike_heading_pose = calc_heading(merged_position_pose, angle_error)
-            # print(spike_heading_pose)
-            merged_pose = merge_heading(merged_position_pose, spike_heading_pose)
-            print("merged_position_pose:", merged_position_pose[2], "spike_heading_pose:", spike_heading_pose[2])
-            # pose = merged_position_pose
-            pose = merged_pose
-
-        count = navigation.drive_paths(index, paths, pose, 250)
-        if count != index:
-            path_count += 1
-        index = count % 4
-        if path_count == 12:
-            if pose[1] >= stop_y:
-                print("Reached stopping pose")
-                break
-
-    drive.drive(0)  # Stop the robot by setting speed to 0
-# print_time = time.time() + 2
-# stop_time = time.time() + 10
+print('steps', drive.steps)
 # while True:
-#     ldr.update()
+#     if ldr.update():
+#         break
+# print('cleared')
+ldr = coind4.CoinD4() #lidar initialise
+ldr.start()
+print("Lidar started")
+# compass = Compass()
+gyro = Gyro() #initialise class
+gyro.calibration()
+print("Gyro calibrated")
 
-#     if time.time() > print_time:
-#         print(ldr.get_rpm())
-#         print(ldr.get_measurements())
-#         print_time = time.time() + 0.5
+# print('start')
 
-    # gyro.update_angle()
-    # if time.time() > print_time:
-    #     print(gyro.angle_z())
-    #     print(drive.steps)
-    #     print_time = time.time() + 0.5 
-    # drive.steer_p(0, gyro.angle_z(), 200)
+# client.connect()
+# print("Client connected")
 
-    # if time.time() > stop_time:
-    #     break
-    
+# while True:
+#     initial_pose()
+#     print('done')
+    # pose = estimate_pose(initial_pose(), gyro.delta_z(), MM_PER_STEPS)
+    # if ldr.update():
+    #     print("working")
+    #     lidar_measurements = ldr.get_measurements()
+    #     closer_spikes = identify_closer_spikes(lidar_measurements)
+    #     print(closer_spikes)
 
-## -------- Finding min and max compass angle -------- ##
-# if d[0] > lx:
-#     lx = d[0]
-# elif d[0] < mx:
-#     mx = d[0]
-# if d[2] > ly:
-#     ly = d[2]
-# elif d[2] < my:
-#     my = d[2]
+pose = initial_pose()
+stop_y = pose[1] - 50
+print("Initial pose:", pose)
+print("angle_z =", gyro.angle_z())
 
+if pose[0] < 1500:
+    paths = cw_paths
+else:
+    paths = ccw_paths
+paths = navigation.augment_paths(paths)
+index = 0
+print("Paths augmented")
 
-# Close handle 
-# pi.close() -- check 
+# pose = [500, 500, 90] # Initial pose for testing
+# time.sleep(2)
+# count = 0
+path_count = 0
+print('steps', drive.steps)
+reset_pose()  # Reset the pose to the initial state
+while True:
+    pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
+    # print("Pose:", pose)
+    if ldr.update():
+        # print("working", time.time())
+        lidar_measurements = ldr.get_measurements()
+        # for l in lidar_measurements:
+        #     print(l)
+        # print(len(lidar_measurements))
+        # break
+        #spike detection
+        spikes = spike.identify_spikes(lidar_measurements)
+        # print(spikes)
+        c_spikes = spike.add_cartesian(pose, spikes)
+        # print(pose, c_spikes)
+        matches = spike.match_landmarks(c_spikes)
+        # client.send(matches)
+        print(len(matches))
+        while pose[2] > 180:
+            pose[2] -= 360
+        while pose[2] < -180:
+            pose[2] += 360
+        print(pose, matches)
+        
+        # if len(matches) == 0:
+        #     count += 1
+        #     if count > 5:
+        #         drive.drive(0)
+        #         time.sleep(20)
+        #         count = 0
+        position_error = calc_position_error(matches)
+        spike_pose = calc_pose(pose, position_error)
+        print("Pose after position error:", spike_pose)
+        merged_position_pose = merge_positions(pose, spike_pose)
+        angle_error = calc_angle_error(merged_position_pose, matches)
+        # print(angle_error)
+        spike_heading_pose = calc_heading(merged_position_pose, angle_error)
+        # print(spike_heading_pose)
+        merged_pose = merge_heading(merged_position_pose, spike_heading_pose)
+        print("merged_position_pose:", merged_position_pose[2], "spike_heading_pose:", spike_heading_pose[2])
+        # pose = merged_position_pose
+        pose = merged_pose
+
+    count = navigation.drive_paths(index, paths, pose, 250)
+    if count != index:
+        path_count += 1
+    index = count % 4
+    if path_count == 12:
+        if pose[1] >= stop_y:
+            print("Reached stopping pose")
+            break
+
+drive.drive(0)  
