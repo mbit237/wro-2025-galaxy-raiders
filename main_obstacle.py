@@ -34,6 +34,7 @@ drive.CENTER = 50
 #     [[2500, 500], [1000, 500]]
 # ]
 
+
 cw_paths = [ # clockwise paths for open challenge
     # [[500, 500], [500, 2000]], 
     # [[500, 2500], [2000, 2500]], 
@@ -58,98 +59,78 @@ ccw_paths = [ # counter-clockwise paths for open challenge
 
 obstacle_outer_paths = [
 # straight path #1
-[[200, 1000], [200, 1350]],
+[[200, 1000], [200, 1200]],
+
+[[200, 1200], [200, 1350]],
 # check colour
 [[200, 1500], [200, 2000]],
 
 # turning point #1
-[[200, 2000], [600, 2200]],
+[[200, 2000], [550, 2300]],
 # check colour
 [[700, 2400], [700, 2450]],
 # check colour
-
-# top path #2
-[[1000, 2800], [1350, 2800]],
-# check colour
-[[1500, 2800], [2000, 2800]],
-
-# turning point #2
-[[2000, 2800], [2200, 2400]],
-# check colour
-[[2400, 2300], [2450, 2300]],
-# check colour
-
-# right path #3
-[[2800, 2000], [2800, 1550]],
-# check colour
-[[2800, 1500], [2800, 1000]],
-
-# turning point #3
-[[2800, 1000], [2400, 800]],
-# check colour
-[[2300, 600], [2300, 550]],
-# check colour
-
-# bottom path #4
-[[2000, 200], [1650, 200]],
-# check colour
-[[1500, 200], [1000, 200]],
-
-# turning point #4
-[[1000, 200], [800, 600]],
-# check colour
-[[600, 700], [550, 700]],
-# check colour
 ]
 
+# obstacle_inner_paths = [
+# # straight path #1
+# [[800, 1000], [800, 1200]],
+# # check colour
+# [[800, 1500], [800, 2000]],
+# # check colour
+
+# #turning point #1
+# [[800, 2200], [850, 2200]],
+# [[850, 2200], [900, 2200]],
+# # check colour
+# ]
 obstacle_inner_paths = [
 # straight path #1
-[[800, 1000], [800, 1350]],
+[[800, 1000], [800, 1200]],
 # check colour
-[[800, 1500], [800, 2000]],
+[[800, 1200], [800, 1400]],
 # check colour
 
 #turning point #1
+[[800, 1400], [800, 2000]],
 [[800, 2200], [850, 2200]],
-[[850, 2200], [900, 2200]], # have same no. of inner and outer paths, easier paths swtitcing
+[[850, 2200], [900, 2200]],
 # check colour
-[[1000, 2200], [1350, 2200]],
-
-#straight path #2
-[[1350, 2200], [2000, 2200]],
-# check colour
-[[1500, 2200], [1850, 2200]],
-# check colour
-
-# turning point #2
-[[2200, 2200], [2200, 2150]],
-[[2200, 2150], [2200, 2100]],
-# check colour
-[[2200, 2000], [2100, 1550]],
-
-# straight path #3
-[[2200, 1300], [2200, 1000]],
-# check colour
-[[2200, 800], [2100, 800]],
-# check colour
-
-# turning point #3
-[[2000, 800], [1650, 800]],
-# check colour
-[[1500, 800], [1000, 800]],
-
-# straight path #4
-[[800, 800], [850, 800]],
-[[850, 800], [900, 800]],
-# check colour
-
-# check colour
-
-# turning point #4
-
-# check colour
- # go back to start
 ]
+ccw_obstacle_outer_paths = []
+ccw_obstacle_inner_paths = []
+
+for a in range(5):
+    p = obstacle_inner_paths[a]
+    obstacle_inner_paths.append([[p[0][1], 3000-p[0][0]], [p[1][1], 3000-p[1][0]]])
+    p = obstacle_outer_paths[a]
+    obstacle_outer_paths.append([[p[0][1], 3000-p[0][0]], [p[1][1], 3000-p[1][0]]])
+for a in range(5):
+    p = obstacle_inner_paths[a]
+    obstacle_inner_paths.append([[3000-p[0][0], 3000-p[0][1]], [3000-p[1][0], 3000-p[1][1]]])
+    p = obstacle_outer_paths[a]
+    obstacle_outer_paths.append([[3000-p[0][0], 3000-p[0][1]], [3000-p[1][0], 3000-p[1][1]]])
+for a in range(5):
+    p = obstacle_inner_paths[a]
+    obstacle_inner_paths.append([[3000-p[0][1], p[0][0]], [3000-p[1][1], p[1][0]]])
+    p = obstacle_outer_paths[a]
+    obstacle_outer_paths.append([[3000-p[0][1], p[0][0]], [3000-p[1][1], p[1][0]]])
+
+for a in range(len(obstacle_inner_paths)):
+    p = obstacle_inner_paths[a]
+    ccw_obstacle_inner_paths.append([[3000-p[0][0], p[0][1]], [3000-p[1][0], p[1][1]]])
+    p = obstacle_outer_paths[a]
+    ccw_obstacle_outer_paths.append([[3000-p[0][0], p[0][1]], [3000-p[1][0], p[1][1]]])
+
+obstacle_outer_paths[0] = [[400, 1000], [400, 1200]]
+obstacle_outer_paths[1] = [[400, 1200], [400, 1350]]
+obstacle_outer_paths[19] = [[600, 700], [559, 700]]
+ccw_obstacle_outer_paths[1] = [[2600, 1200], [2600, 1350]]
+ccw_obstacle_outer_paths[2] = [[2600, 1500], [2600, 2000]]
+
+# for b in range(4):
+#     p = ccw_obstacle_inner_paths[]
+
 
 # obstacle_outer_paths = [
 # # straight path #1
@@ -243,7 +224,6 @@ obstacle_inner_paths = [
 # [[1000, 800], [800, 1000]], # go back to start
 # ]
 
-paths = obstacle_inner_paths
 # pose = [600, 1600, 90] # Initial pose (mm)
 
 
@@ -385,6 +365,9 @@ print('steps', drive.steps)
 ldr = coind4.CoinD4() #lidar initialise
 ldr.start()
 print("Lidar started")
+L_dist = min(get_distance(20), get_distance(25), get_distance(30), get_distance(35), get_distance(40), get_distance(45))
+R_dist = min(get_distance(340), get_distance(335), get_distance(330), get_distance(325), get_distance(320), get_distance(315))
+
 # compass = Compass()
 gyro = Gyro() #initialise class
 gyro.calibration()
@@ -410,8 +393,16 @@ stop_y = pose[1] - 50
 print("Initial pose:", pose)
 print("angle_z =", gyro.angle_z())
 
-obstacle_outer_paths = navigation.augment_paths(obstacle_outer_paths)
-obstacle_inner_paths = navigation.augment_paths(obstacle_inner_paths)
+if pose[0] < 1500:
+    obstacle_outer_paths = navigation.augment_paths(obstacle_outer_paths)
+    obstacle_inner_paths = navigation.augment_paths(obstacle_inner_paths)
+    print("clockwise")
+else:
+    obstacle_inner_paths = navigation.augment_paths(ccw_obstacle_outer_paths)
+    obstacle_outer_paths = navigation.augment_paths(ccw_obstacle_inner_paths)
+    print("counter-clockwise")
+paths = obstacle_inner_paths
+
 index = 0
 print("Paths augmented")
 
@@ -421,6 +412,81 @@ print("Paths augmented")
 path_count = 0
 print('steps', drive.steps)
 reset_pose()  # Reset the pose to the initial state
+colour = None
+
+reverse = False
+if pose[0] < 1500: #left
+    if R_dist < 400:
+        colour = rpicam.detect_blob()
+        if colour == "r":
+            reverse = True
+            paths = obstacle_inner_paths
+        else:
+            paths = obstacle_outer_paths
+else:
+    if L_dist < 400:
+        colour = rpicam.detect_blob()
+        if colour == "g":
+            reverse = True
+            paths = obstacle_outer_paths
+        else:
+            paths = obstacle_inner_paths
+
+
+
+
+while reverse:
+    pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
+    if ldr.update():
+        # print("working", time.time())
+        lidar_measurements = ldr.get_measurements()
+        # for l in lidar_measurements:
+        #     print(l)
+        # print(len(lidar_measurements))
+        # break
+        #spike detection
+        spikes = spike.identify_spikes(lidar_measurements)
+        # print(spikes)
+        c_spikes = spike.add_cartesian(pose, spikes)
+        # print(pose, c_spikes)
+        matches = spike.match_landmarks(c_spikes)
+        # client.send(matches)
+        print(len(matches))
+        while pose[2] > 180:
+            pose[2] -= 360
+        while pose[2] < -180:
+            pose[2] += 360
+        print(pose, matches)
+        
+        # if len(matches) == 0:
+        #     count += 1
+        #     if count > 5:
+        #         drive.drive(0)
+        #         time.sleep(20)
+        #         count = 0
+        position_error = calc_position_error(matches)
+        spike_pose = calc_pose(pose, position_error)
+        # print("Pose after position error:", spike_pose)
+        merged_position_pose = merge_positions(pose, spike_pose)
+        angle_error = calc_angle_error(merged_position_pose, matches)
+        # print(angle_error)
+        spike_heading_pose = calc_heading(merged_position_pose, angle_error)
+        # print(spike_heading_pose)
+        merged_pose = merge_heading(merged_position_pose, spike_heading_pose)
+        # print("merged_position_pose:", merged_position_pose[2], "spike_heading_pose:", spike_heading_pose[2])
+        # pose = merged_position_pose
+        pose = merged_pose
+
+    
+ 
+    if pose[0] < 1500: #left
+        drive.steer_p_back(90, pose[2], 200)
+        if pose[1] <= 1000:
+            break
+    else: #right
+        drive.steer_p_back(90, pose[2], 200)
+        if pose[1] <= 1500:
+            break 
 
 while True:
     pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
@@ -469,7 +535,9 @@ while True:
 
     if count != index:
         path_count += 1
-        if 1 == 1:
+        if count % 4 == 1 and colour != None:
+            print("skip check\n\n\n")
+        else:
             colour = rpicam.detect_blob()
             print("colour", colour)
             if colour == 'r':
@@ -478,8 +546,8 @@ while True:
                 paths = obstacle_outer_paths
         print('path', paths[count % len(paths)])
 
-    index = count % 16
-    if path_count == 16:
+    index = count % len(paths)
+    if path_count >= 40:
         if pose[1] >= stop_y:
             print("Reached stopping pose")
             break
