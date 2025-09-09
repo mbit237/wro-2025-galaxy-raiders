@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 import pigpio
 import time 
 import struct
