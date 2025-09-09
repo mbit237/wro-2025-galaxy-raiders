@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import pigpio
 import time 
 import struct
@@ -64,20 +65,6 @@ obstacle_inner_paths = [
 [[2200, 800], [850, 800]]
 ]
 
-# pose = [600, 1600, 90] # Initial pose (mm)
-
-
-
-# Test motor encoder
-# drive.drive(155)
-# time.sleep(3)
-# drive.drive(0)
-# print(drive.steps)
-# drive.drive(-155)
-# time.sleep(3)
-# drive.drive(0)
-# print(drive.steps)
-
 def get_distance(dir):
     while True: 
         if ldr.update():
@@ -97,7 +84,6 @@ def identify_closer_spikes(measurements):
                 closer_spikes.append(measurements[d])
     
     return closer_spikes
-
 
 def initial_pose():
     # forward + backward dist, left + right dist, gyro_z
@@ -206,7 +192,10 @@ def merge_heading(merged_position_pose, spike_pose):
     spike_z = spike_pose[2]
     merged_angle = angle_z * (1 - HEADING_FILTER_RATIO) + spike_z * HEADING_FILTER_RATIO
     return [merged_position_pose[0], merged_position_pose[1], merged_angle]
-    
+
+pi = pigpio.pi()
+pi.set_mode(17, pigpio.INPUT)
+pi.set_pull_up_down(17, pigpio.PUD_UP)
 print('steps', drive.steps)
 # while True:
 #     if ldr.update():
@@ -305,41 +294,9 @@ while True:
         if pose[1] >= stop_y:
             print("Reached stopping pose")
             break
-    # if index == 3:
-    #     break
 
-drive.drive(0)  # Stop the robot by setting speed to 0
-# print_time = time.time() + 2
-# stop_time = time.time() + 10
-# while True:
-#     ldr.update()
+    if pi.read(17) == 0:
+        break
 
-#     if time.time() > print_time:
-#         print(ldr.get_rpm())
-#         print(ldr.get_measurements())
-#         print_time = time.time() + 0.5
-
-    # gyro.update_angle()
-    # if time.time() > print_time:
-    #     print(gyro.angle_z())
-    #     print(drive.steps)
-    #     print_time = time.time() + 0.5 
-    # drive.steer_p(0, gyro.angle_z(), 200)
-
-    # if time.time() > stop_time:
-    #     break
-    
-
-## -------- Finding min and max compass angle -------- ##
-# if d[0] > lx:
-#     lx = d[0]
-# elif d[0] < mx:
-#     mx = d[0]
-# if d[2] > ly:
-#     ly = d[2]
-# elif d[2] < my:
-#     my = d[2]
-
-
-# Close handle 
-# pi.close() -- check 
+drive.drive(0)  
+drive.steering(0)  
