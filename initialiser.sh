@@ -2,12 +2,12 @@
 cd /home/joshua
 while true; do
 echo doing
-if /home/joshua/main.py; then 
+if python /home/joshua/main.py; then 
     echo open > /home/joshua/fur.txt
-    ./main_open.py 
+    python /main_open.py 
 else 
     echo obstacle > /home/joshua/fur.txt
-    ./main_obstacle.py
+    python /main_obstacle.py
 fi
 echo done
 sleep 3

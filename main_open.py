@@ -97,11 +97,13 @@ def initial_pose():
     while True:
         if ldr.update():
             identified_spikes = identify_closer_spikes(ldr.get_measurements())
+            print('spikes: ', identified_spikes)
             for closer_spike in identified_spikes:
                 if 0 < closer_spike[0] < 180:
                     vote += 1
                 if 180 < closer_spike[0] < 360:
                     vote -= 1
+            print('votes:', vote)
             if vote <= -10: # left side
                 x = (left_dist)
                 y = ((3000 - fwd_dist) + rear_dist) / 2

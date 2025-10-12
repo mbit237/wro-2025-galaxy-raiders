@@ -272,20 +272,28 @@ def initial_pose():
     while True:
         if ldr.update():
             identified_spikes = identify_closer_spikes(ldr.get_measurements())
+            print('spikes: ', identified_spikes)
             for closer_spike in identified_spikes:
                 if 0 < closer_spike[0] < 180:
                     vote += 1
                 if 180 < closer_spike[0] < 360:
                     vote -= 1
+            print('votes:', vote)
             if vote <= -10: # left side
                 x = (left_dist)
-                y = ((3000 - fwd_dist) + rear_dist) / 2
-                print("left side", "x:", x, "y:", y)
+                if fwd_dist + rear_dist > 3500:
+                    y = 3000 - fwd_dist
+                else:
+                    y = ((3000 - fwd_dist) + rear_dist) / 2
+                print("left side", "x:", x, "y:", y, "fwd_dist:", fwd_dist, "rear_dist:", rear_dist)
                 return [x, y, 90]
             if vote >= 10: # right side
                 x = ((1000 - right_dist)) + 2000
-                y = ((3000 - fwd_dist) + rear_dist) / 2
-                print("right side", "x:", x, "y:", y)
+                if fwd_dist + rear_dist > 3500:
+                    y = 3000 - fwd_dist
+                else:
+                    y = ((3000 - fwd_dist) + rear_dist) / 2
+                print("right side", "x:", x, "y:", y, "fwd_dist:", fwd_dist, "rear_dist:", rear_dist)
                 return [x, y, 90]
 
 def calc_position_error(matches):
@@ -424,16 +432,20 @@ if pose[0] < 1500: #left
         colour = rpicam.detect_blob()
         if colour == "r":
             reverse = True
+            print(colour)
             paths = obstacle_inner_paths
         else:
+            print(colour)
             paths = obstacle_outer_paths
 else:
     if L_dist < 400:
         colour = rpicam.detect_blob()
         if colour == "g":
             reverse = True
+            print(colour)
             paths = obstacle_outer_paths
         else:
+            print(colour)
             paths = obstacle_inner_paths
 
 
@@ -485,12 +497,22 @@ while reverse:
  
     if pose[0] < 1500: #left
         drive.steer_p_back(90, pose[2], 200)
-        if pose[1] <= 1000:
+        if pose[1] <= 1300:
             break
     else: #right
         drive.steer_p_back(90, pose[2], 200)
         if pose[1] <= 1500:
             break 
+
+    # if pose[0] < 1500: #left
+    #     backward_y_end = pose[1] - 400
+    #     while pose[1] <= backward_y_end:
+    #         drive.steer_p_back(90, pose[2], 200)
+    # else: #right
+    #     backward_y_end = pose[1] - 400
+    #     while pose[1] <= backward_y_end:
+    #         drive.steer_p_back(90, pose[2], 200)
+
 
 while True:
     pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
@@ -551,7 +573,7 @@ while True:
         print('path', paths[count % len(paths)])
 
     index = count % len(paths)
-    if path_count >= 40:
+    if path_count >= 60:
         if pose[1] >= stop_y:
             print("Reached stopping pose")
             break
