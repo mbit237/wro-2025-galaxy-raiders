@@ -1,15 +1,36 @@
 #!/bin/python
-import pigpio 
+import pigpio
 import time 
-import sys
+import struct
+import math 
+import coind4
+from gyro import Gyro 
+import drive
+import spike
+import navigation
+from estimate_pose import estimate_pose, reset_pose
+import client_raspi as client
+from initialisation import *
+import main_open
+import main_obstacle
 
-# chmod a+x 
+navigation.PATH_GAIN = -0.5
+navigation.MAX_ANGLE = 60
+drive.STEER_MAX = 45
+drive.CENTER = 50
 
 pi = pigpio.pi()
-pi.set_mode(17, pigpio.INPUT) # button -- GPIO17 
+pi.set_mode(17, pigpio.INPUT)
 pi.set_pull_up_down(17, pigpio.PUD_UP)
-# PUD_DOWN -- opposite of PUD_UP, connected to GND when it is off, connect to 3.3V when button pressed
-# PUD_OFF -- no pull up or down (pin is floating, connect it externally to a pull up or down resistor)
+print('steps', drive.steps)
+
+ldr = coind4.CoinD4() 
+ldr.start()
+print("Lidar started")
+
+gyro = Gyro() 
+gyro.calibration()
+print("Gyro calibrated")
 
 while True:
     print("wait for button")
@@ -20,8 +41,10 @@ while True:
     time.sleep(1)
     if pi.read(17) == 0:
         print("long (open)")
-        sys.exit(0)
+        main_open.run(gyro, ldr, pi)
     else:
         print("short (obstacle)")
-        sys.exit(1)
+        main_obstacle.run(gyro, ldr, pi)
+
+
 
