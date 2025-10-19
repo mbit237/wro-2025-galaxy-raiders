@@ -66,7 +66,7 @@ def steer_p_back(dir, curr_angle, speed):
     gain = -2 
     correction = error * gain 
     steering(correction)
-    drive(-speed)
+    drive(-speed) 
 
 cb1 = pi.callback(5, pigpio.RISING_EDGE, step_count)
 cb2 = pi.callback(6, pigpio.EITHER_EDGE, drive_dir)
