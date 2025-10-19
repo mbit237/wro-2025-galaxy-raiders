@@ -244,7 +244,7 @@ path_count = 0
 print('steps', drive.steps)
 reset_pose()  # Reset the pose to the initial state
 while True:
-    print("fwd dist:", fwd_dist, "rear dist:", rear_dist)
+    print("left dist:", get_distance(90), "right dist:", get_distance(270))
 #     pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
 #     # print("Pose:", pose)
 #     if ldr.update():
