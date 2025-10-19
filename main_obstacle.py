@@ -12,9 +12,7 @@ from estimate_pose import estimate_pose, reset_pose
 import client_raspi as client
 import rpicam
 from initialisation import *
-
-POSITION_FILTER_RATIO = 0.1 
-HEADING_FILTER_RATIO = 0.01  
+from main import POSITION_FILTER_RATIO, HEADING_FILTER_RATIO, MM_PER_STEPS
 
 outer_one_section = [
 # straight path #1
@@ -197,6 +195,10 @@ def run(gyro, ldr, pi):
             if pose[1] >= stop_y:
                 print("Reached stopping pose")
                 break
+        
+        with open("troubleshootingData.txt", "w") as f:
+            f.write(str(matches), str(merged_position_pose), str(merged_pose))
+        
         if pi.read(17) == 0:
             break
     #code here
