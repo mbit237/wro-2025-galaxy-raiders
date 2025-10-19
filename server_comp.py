@@ -29,7 +29,7 @@ server.bind(ADDR)
 def start():
     server.listen()
     print(f"[LISTENING] Server is listening on {SERVER}")
-
+    
     conn, addr = server.accept() 
 
     print(f"[NEW CONNECTION] {addr} connected.")
