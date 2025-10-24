@@ -1,5 +1,41 @@
 import tkinter as tk
 import math
+import socket 
+import pickle
+import matplotlib.pyplot as plt
+
+# intialise socket 
+
+def get_lan_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        return str(s.getsockname()[0])
+    finally:
+        s.close()
+
+print("My LAN IP is:", get_lan_ip())
+
+HEADER = 42  
+HEADER_LENGTH = 3
+PORT = 5050
+SERVER = get_lan_ip() 
+ADDR = (SERVER, PORT)
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "!DISCONNECT"
+buf = bytearray(10000)
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+# Disable Nagle's algorithm by setting TCP_NODELAY to 1
+server.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+server.setblocking(False)
+server.bind(ADDR)
+server.listen()
+print(f"[LISTENING] Server is listening on {SERVER}")
+
+conn = None
+buf = bytearray(10000)
+ptr = 0
+msg_length = 0
 
 SIZE = 900
 SCALE = SIZE / 3000
@@ -9,11 +45,7 @@ ARROW_LEN = 100
 root = tk.Tk()
 root.geometry("1600x1000")
 
-history_data = [
-    [[500, 1500, 90], [480,1490,95]],
-    [[400, 1910, 85], [420,1900,70]],
-    [[600, 2150, 100], [580,2190,105]]
-    ]
+history_data = []
 
 # Draw functions
 def circle(x, y, r=5, fill="cyan", outline="black", width=1):
@@ -81,19 +113,68 @@ title.pack()
 
 v1 = tk.IntVar()
 
-slider = tk.Scale(root, command=scale_change, variable=v1, from_=0, to=len(history_data)-1, orient=tk.HORIZONTAL)
+slider = tk.Scale(root, command=scale_change, variable=v1, from_=0, to=len(history_data)-1, orient=tk.HORIZONTAL, length=900)
 slider.pack()
 
 field = tk.Canvas(root, width=900, height=900)
 field.pack()
 
 field_img = tk.PhotoImage(file="FutureEngineers_Playfield_900.png")
-draw_robot(int(v1.get()))
 
-def foo():
-    print('foo')
-    root.after(1000, foo)
+def socket_connect():
+    global conn, ptr, msg_length
+    if conn is None: # no current connection 
+        try:
+            conn, addr = server.accept() 
+            print(f"[NEW CONNECTION] {addr} connected.")
+            conn.setblocking(False) # set connection to non-blocking
+        except BlockingIOError: # nothing received
+            pass 
+    else: # current connection 
+        try:
+            chars = conn.recv(10000) 
+            if not chars: # checks for empty bytes case (client cleanly disconnects)
+                print("[DISCONNECTED]")
+                conn.close()
+                conn = None
+                return
+            for char in chars:
+                if ptr == 0:
+                    if char == HEADER:
+                        buf[0] = char
+                        ptr += 1
+                else:
+                    buf[ptr] = char
+                    ptr += 1
+                    if ptr == HEADER_LENGTH:
+                        msg_length = buf[1] << 8 | buf[2]
+                    elif ptr == HEADER_LENGTH + msg_length:
+                        ptr = 0 
+                        message = pickle.loads(buf[3:])
+                        if message == DISCONNECT_MESSAGE:
+                            print("[CLIENT DISCONNECT]")
+                            conn.close()
+                            conn = None
+                        else:
+                            # print(message, type(message))
+                            spike_pose, merged_pose, match_spikes = message
+                            print(history_data)
+                            history_data.append([spike_pose, merged_pose])
 
-root.after(1000, foo)
+                            slider.config(to=len(history_data)-1)
+
+                            v1.set(len(history_data)-1)
+                            draw_robot(len(history_data)-1)
+                            # for match_spike in match_spikes:
+                            #     circle(match_spike[0], match_spike[1])
+        except BlockingIOError: # no data yet 
+            pass
+        except ConnectionResetError: # client forcefully closed connection 
+            print("Client Reset")
+            conn = None 
+
+    root.after(1000, socket_connect)
+
+root.after(1000, socket_connect)
 
 root.mainloop() # run application once it is ready -- blocks
