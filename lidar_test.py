@@ -29,6 +29,8 @@ HEADING_FILTER_RATIO = 0.01  # 0.1%, if it is too low, heading error will be lar
 #     [[2500, 500], [1000, 500]]
 # ]
 
+parking_path = [[500, 1000], [500, 2000]]
+
 cw_paths = [ # clockwise paths for open challenge
     # [[500, 500], [500, 2000]], 
     # [[500, 2500], [2000, 2500]], 
@@ -233,9 +235,9 @@ if pose[0] < 1500:
     paths = cw_paths
 else:
     paths = ccw_paths
-paths = navigation.augment_paths(paths)
+path = navigation.augment_path(parking_path)
 index = 0
-print("Paths augmented")
+print("Path augmented")
 
 # pose = [500, 500, 90] # Initial pose for testing
 # time.sleep(2) 
@@ -243,49 +245,58 @@ print("Paths augmented")
 path_count = 0
 print('steps', drive.steps)
 reset_pose()  # Reset the pose to the initial state
+stop_t = time.time() + 5
+while time.time() < stop_t:
+    pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
+
+    navigation.drive_path_back(path, pose, 200)
+drive.drive(0)
+print(pose)
+'''
 while True:
     print("left dist:", get_distance(90), "right dist:", get_distance(270))
-#     pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
-#     # print("Pose:", pose)
-#     if ldr.update():
-#         # print("working", time.time())
-#         lidar_measurements = ldr.get_measurements()
-#         # for l in lidar_measurements:
-#         #     print(l)
-#         # print(len(lidar_measurements))
-#         # break
-#         #spike detection
-#         spikes = spike.identify_spikes(lidar_measurements)
-#         # print(spikes)
-#         c_spikes = spike.add_cartesian(pose, spikes)
-#         # print(pose, c_spikes)
-#         matches = spike.match_landmarks(c_spikes)
-#         # client.send(matches)
-#         print(len(matches))
-#         while pose[2] > 180:
-#             pose[2] -= 360
-#         while pose[2] < -180:
-#             pose[2] += 360
-#         print(pose, matches)
+    # print("Pose:", pose)
+    if ldr.update():
+        # print("working", time.time())
+        lidar_measurements = ldr.get_measurements()
+        # for l in lidar_measurements:
+        #     print(l)
+        # print(len(lidar_measurements))
+        # break
+        #spike detection
+        spikes = spike.identify_spikes(lidar_measurements)
+        # print(spikes)
+        c_spikes = spike.add_cartesian(pose, spikes)
+        # print(pose, c_spikes)
+        matches = spike.match_landmarks(c_spikes)
+        # client.send(matches)
+        print(len(matches))
+        while pose[2] > 180:
+            pose[2] -= 360
+        while pose[2] < -180:
+            pose[2] += 360
+        print(pose, matches)
         
-#         # if len(matches) == 0:
-#         #     count += 1
-#         #     if count > 5:
-#         #         drive.drive(0)
-#         #         time.sleep(20)
-#         #         count = 0
-#         position_error = calc_position_error(matches)
-#         spike_pose = calc_pose(pose, position_error)
-#         print("Pose after position error:", spike_pose)
-#         merged_position_pose = merge_positions(pose, spike_pose)
-#         angle_error = calc_angle_error(merged_position_pose, matches)
-#         # print(angle_error)
-#         spike_heading_pose = calc_heading(merged_position_pose, angle_error)
-#         # print(spike_heading_pose)
-#         merged_pose = merge_heading(merged_position_pose, spike_heading_pose)
-#         print("merged_position_pose:", merged_position_pose[2], "spike_heading_pose:", spike_heading_pose[2])
-#         # pose = merged_position_pose
-#         pose = merged_pose
+        # if len(matches) == 0:
+        #     count += 1
+        #     if count > 5:
+        #         drive.drive(0)
+        #         time.sleep(20)
+        #         count = 0
+        position_error = calc_position_error(matches)
+        spike_pose = calc_pose(pose, position_error)
+        print("Pose after position error:", spike_pose)
+        merged_position_pose = merge_positions(pose, spike_pose)
+        angle_error = calc_angle_error(merged_position_pose, matches)
+        # print(angle_error)
+        spike_heading_pose = calc_heading(merged_position_pose, angle_error)
+        # print(spike_heading_pose)
+        merged_pose = merge_heading(merged_position_pose, spike_heading_pose)
+        print("merged_position_pose:", merged_position_pose[2], "spike_heading_pose:", spike_heading_pose[2])
+        # pose = merged_position_pose
+        pose = merged_pose
+
+    navigation.drive_path_back(parking_path, pose, 200)
 
 #     count = navigation.drive_paths(index, paths, pose, 250)
 #     if count != index:
@@ -301,3 +312,4 @@ while True:
 
 # drive.drive(0)  
 # drive.steering(0)  
+'''

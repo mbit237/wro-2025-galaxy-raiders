@@ -47,6 +47,22 @@ def drive_path(path, pose, speed):
     # print(f"Target direction: {target_dir}, gyro: {pose}")
     drive.steer_p(target_dir, pose[2], speed)
 
+def drive_path_back(path, pose, speed):
+    target_dir = path[3] 
+    robot_vec = [pose[0] - path[0][0], pose[1] - path[0][1]]
+    
+    err = dot(path[5], robot_vec) # how far off the robot is (in mm)
+    corr = err * PATH_GAIN 
+    # Limit correction
+    if corr > MAX_ANGLE:
+        corr = MAX_ANGLE
+    elif corr < -MAX_ANGLE:
+        corr = -MAX_ANGLE
+
+    target_dir -= corr 
+    # print(f"Target direction: {target_dir}, gyro: {pose}")
+    drive.steer_p_back(target_dir, pose[2], speed)
+
 def drive_paths(idx, paths, pose, speed): # idx -- references path currently following 
     path = paths[idx]
     

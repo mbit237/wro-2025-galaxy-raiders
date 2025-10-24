@@ -42,6 +42,7 @@ inner_one_section = [
 # check colour
 ]
 
+parking_path = [[400, 1450], [400, 1100]]
 obstacle_outer_paths, obstacle_inner_paths = full_path_from_one_section(outer_one_section, inner_one_section)
 ccw_obstacle_outer_paths, ccw_obstacle_inner_paths = ccw_paths_from_cw(obstacle_outer_paths, obstacle_inner_paths)
 
@@ -199,6 +200,13 @@ def run(gyro, ldr, pi):
             f.write(str(matches), str(merged_position_pose), str(merged_pose))
         
         if pi.read(17) == 0:
+            break
+    #code here
+    while True:
+        if pose[0] != parking_path[0][0] or pose[1] != parking_path[0][1]:
+            navigation.drive_path_back(parking_path, pose, 200)
+            navigation.drive_path(parking_path, pose, 200)
+        else:
             break
 
     drive.drive(0) 
