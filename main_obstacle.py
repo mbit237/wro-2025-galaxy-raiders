@@ -9,7 +9,7 @@ import drive
 import spike
 import navigation
 from estimate_pose import estimate_pose, reset_pose
-import client_raspi as client
+# import client_raspi as client
 import rpicam
 from initialisation import *
 from main import POSITION_FILTER_RATIO, HEADING_FILTER_RATIO, MM_PER_STEPS
@@ -191,7 +191,7 @@ def run(gyro, ldr, pi):
             print('path', paths[count % len(paths)])
 
         index = count % len(paths)
-        if path_count >= 60:
+        if path_count >= 3:
             if pose[1] >= stop_y:
                 print("Reached stopping pose")
                 break
@@ -201,7 +201,7 @@ def run(gyro, ldr, pi):
         
         if pi.read(17) == 0:
             break
-    #code here
+
     while True:
         if pose[0] != parking_path[0][0] or pose[1] != parking_path[0][1]:
             navigation.drive_path_back(parking_path, pose, 200)
