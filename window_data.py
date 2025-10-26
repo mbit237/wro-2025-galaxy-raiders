@@ -2,7 +2,7 @@ import tkinter as tk
 import math
 import socket 
 import pickle
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 # intialise socket 
 
@@ -62,7 +62,7 @@ def line(x1, y1, x2, y2, fill="blue", arrow=tk.LAST):
 
 def draw_robot(idx):
     field.create_image((0, 0), image=field_img, anchor=tk.NW)
-    pose, spike_pose = history_data[idx]
+    pose, spike_pose, match_spikes = history_data[idx]
     x = pose[0]
     y = pose[1]
     heading = pose[2]
@@ -81,6 +81,9 @@ def draw_robot(idx):
     line(x_spike, y_spike, x2_spike, y2_spike, fill="red")
     draw_trail(idx)
     draw_trail_spikes(idx)
+    for match_spike in match_spikes:
+        circle(match_spike[0], match_spike[1])
+    update_data_label(idx)
     
 def draw_trail(idx):
     end = 0
@@ -107,19 +110,31 @@ def draw_trail_spikes(idx):
 def scale_change(v):
     draw_robot(int(v))
 
+def update_data_label(idx):
+    global data 
+    pose, spike_pose, match_spikes = history_data[idx]
+    data["text"] = "pose: " + str(pose) + '\n'
+    data["text"] += "spike_pose: " + str(spike_pose) + '\n'
+    data["text"] += "match_spikes: " + '\n'
+    for match_spike in match_spikes:
+        data["text"] += "\t" + str(match_spike) + '\n'
+
 # widgets 
-title = tk.Label(root, text='Galaxy Raiders Data Display')
-title.pack()
 
 v1 = tk.IntVar()
 
 slider = tk.Scale(root, command=scale_change, variable=v1, from_=0, to=len(history_data)-1, orient=tk.HORIZONTAL, length=900)
-slider.pack()
+# slider.pack()
+slider.grid(column=0, row=0)
 
 field = tk.Canvas(root, width=900, height=900)
-field.pack()
-
+# field.pack()
+field.grid(column=0, row=1)
 field_img = tk.PhotoImage(file="FutureEngineers_Playfield_900.png")
+
+data = tk.Label(root, text="Waiting for data", wraplength=500, justify=tk.LEFT)
+data.grid(column=1, row=0, rowspan=2, padx=10, pady=10, sticky="ew") # sticky="ew" allows the label to expand horizontally when window is resized
+# ew -- eastwest
 
 def socket_connect():
     global conn, ptr, msg_length
@@ -159,14 +174,13 @@ def socket_connect():
                             # print(message, type(message))
                             spike_pose, merged_pose, match_spikes = message
                             print(history_data)
-                            history_data.append([spike_pose, merged_pose])
+                            history_data.append([spike_pose, merged_pose, match_spikes])
 
                             slider.config(to=len(history_data)-1)
 
                             v1.set(len(history_data)-1)
                             draw_robot(len(history_data)-1)
-                            # for match_spike in match_spikes:
-                            #     circle(match_spike[0], match_spike[1])
+                            
         except BlockingIOError: # no data yet 
             pass
         except ConnectionResetError: # client forcefully closed connection 
