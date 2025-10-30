@@ -28,6 +28,7 @@ ccw_paths = [
 ]
 
 def run(gyro, ldr, pi):
+    # client.connect()
     pose = initial_pose(ldr) 
     stop_y = pose[1] - 50
     print("Initial pose:", pose)

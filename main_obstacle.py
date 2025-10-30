@@ -47,6 +47,7 @@ obstacle_outer_paths, obstacle_inner_paths = full_path_from_one_section(outer_on
 ccw_obstacle_outer_paths, ccw_obstacle_inner_paths = ccw_paths_from_cw(obstacle_outer_paths, obstacle_inner_paths)
 
 def run(gyro, ldr, pi):
+    # client.connect()
     pose = initial_pose() 
     stop_y = pose[1] - 50
     print("Initial pose:", pose)

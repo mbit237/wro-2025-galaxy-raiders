@@ -30,9 +30,9 @@ def send(msg):
     client.send(message)
     print("sent")
 
-connect()
-with open("records.txt") as f:
-    for x in range(50):
-        send(json.loads(f.readline()))
-        time.sleep(0.1)
-send(DISCONNECT_MESSAGE)
+# connect()
+# with open("records.txt") as f:
+#     for x in range(50):
+#         send(json.loads(f.readline()))
+#         time.sleep(0.1)
+# send(DISCONNECT_MESSAGE)
