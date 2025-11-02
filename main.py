@@ -14,9 +14,7 @@ from initialisation import *
 import main_open
 import main_obstacle
 
-POSITION_FILTER_RATIO = 0.1 
-HEADING_FILTER_RATIO = 0.01  
-MM_PER_STEPS = 0.296
+
 
 navigation.PATH_GAIN = -0.5
 navigation.MAX_ANGLE = 60
@@ -31,6 +29,10 @@ print('steps', drive.steps)
 ldr = coind4.CoinD4() 
 ldr.start()
 print("Lidar started")
+
+gyro = Gyro() 
+gyro.calibration() # keep here for now
+print("Gyro calibrated")
 
 while True:
     print("wait for button")
@@ -49,18 +51,19 @@ while True:
     time_period = curr_time - prev_time
 
     # short -- obstacle 
-    if time_period < 1:
+    if time_period < 3:
         print("short (obstacle)")
         main_obstacle.run(gyro, ldr, pi)
+        time.sleep(2)
     # long -- open 
-    elif time_period < 3:
+    elif time_period < 5:
         print("long (open)")
         main_open.run(gyro, ldr, pi)
+        time.sleep(2)
     # long long -- calibrate gyro 
     else:
         print("long long (gyro)")
         time.sleep(1)
-        gyro = Gyro() 
         gyro.calibration()
         print("Gyro calibrated")
 

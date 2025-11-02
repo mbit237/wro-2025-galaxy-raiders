@@ -12,7 +12,10 @@ from estimate_pose import estimate_pose, reset_pose
 import client_raspi as client
 import rpicam
 from initialisation import *
-from main import POSITION_FILTER_RATIO, HEADING_FILTER_RATIO, MM_PER_STEPS
+
+POSITION_FILTER_RATIO = 0.1 
+HEADING_FILTER_RATIO = 0.01  
+MM_PER_STEPS = 0.296
 
 outer_one_section = [
 # straight path #1
@@ -43,16 +46,22 @@ inner_one_section = [
 ]
 
 parking_path = [[400, 1450], [400, 1100]]
+
 obstacle_outer_paths, obstacle_inner_paths = full_path_from_one_section(outer_one_section, inner_one_section)
 ccw_obstacle_outer_paths, ccw_obstacle_inner_paths = ccw_paths_from_cw(obstacle_outer_paths, obstacle_inner_paths)
 
 def run(gyro, ldr, pi):
-    pose = initial_pose() 
+    global parking_path, obstacle_inner_paths, obstacle_outer_paths, ccw_obstacle_inner_paths, ccw_obstacle_outer_paths
+    client.connect()
+    spike_pose = None
+    merged_pose = None
+    matches = None
+    pose = initial_pose(ldr) 
     stop_y = pose[1] - 50
     print("Initial pose:", pose)
     print("angle_z =", gyro.angle_z())
-    L_dist = min(get_distance(20, ldr), get_distance(25, ldr), get_distance(30, ldr), get_distance(35, ldr), get_distance(40, ldr), get_distance(45, ldr))
-    R_dist = min(get_distance(340, ldr), get_distance(335, ldr), get_distance(330, ldr), get_distance(325, ldr), get_distance(320, ldr), get_distance(315, ldr))
+    L_dist = min(get_distance(ldr, 20), get_distance(ldr, 25), get_distance(ldr, 30), get_distance(ldr, 35), get_distance(ldr, 40), get_distance(ldr, 45))
+    R_dist = min(get_distance(ldr, 340), get_distance(ldr, 335), get_distance(ldr, 330), get_distance(ldr, 325), get_distance(ldr, 320), get_distance(ldr, 315))
 
     if pose[0] < 1500:
         obstacle_outer_paths = navigation.augment_paths(obstacle_outer_paths)
@@ -62,6 +71,7 @@ def run(gyro, ldr, pi):
         obstacle_inner_paths = navigation.augment_paths(ccw_obstacle_outer_paths)
         obstacle_outer_paths = navigation.augment_paths(ccw_obstacle_inner_paths)
         print("counter-clockwise")
+    parking_path = navigation.augment_path(parking_path)
     paths = obstacle_inner_paths
 
     index = 0
@@ -143,7 +153,8 @@ def run(gyro, ldr, pi):
             drive.steer_p_back(90, pose[2], 200)
             if pose[1] <= 1500:
                 break 
-
+    
+    data_send_server = []
     while True:
         pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
         if ldr.update():
@@ -174,7 +185,10 @@ def run(gyro, ldr, pi):
             # print("merged_position_pose:", merged_position_pose[2], "spike_heading_pose:", spike_heading_pose[2])
             # pose = merged_position_pose
             pose = merged_pose
-
+            data_send_server = [spike_pose, merged_pose, matches]
+            with open("troubleshootingData.txt", "w") as f:
+                troubleshoot_data = str(matches) + ", " + str(merged_position_pose) + ", " + str(merged_pose)
+                f.write(troubleshoot_data)
         count = navigation.drive_paths(index, paths, pose, 250)
 
         if count != index:
@@ -191,14 +205,16 @@ def run(gyro, ldr, pi):
             print('path', paths[count % len(paths)])
 
         index = count % len(paths)
+        if data_send_server:
+            data_send_server.append(index)
+            data_send_server.append(colour)
+            client.send(data_send_server)
+            data_send_server = []
         if path_count >= 60:
             if pose[1] >= stop_y:
                 print("Reached stopping pose")
                 break
-        
-        with open("troubleshootingData.txt", "w") as f:
-            f.write(str(matches), str(merged_position_pose), str(merged_pose))
-        
+
         if pi.read(17) == 0:
             break
     #code here

@@ -60,10 +60,10 @@ def identify_closer_spikes(measurements):
 
 def initial_pose(ldr):
     # forward + backward dist, left + right dist, gyro_z
-    fwd_dist = get_distance(0, ldr)
-    left_dist = get_distance(90, ldr)
-    rear_dist = get_distance(180, ldr)
-    right_dist = get_distance(270, ldr)
+    fwd_dist = get_distance(ldr, 0)
+    left_dist = get_distance(ldr, 90)
+    rear_dist = get_distance(ldr, 180)
+    right_dist = get_distance(ldr, 270)
 
     #robot is on left side
     vote = 0
