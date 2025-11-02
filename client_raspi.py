@@ -13,7 +13,7 @@ def connect():
     SERVER = 'LAPTOP-AIQ4T307'
     ADDR = (SERVER, PORT)
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.setsockopt(sb ocket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+    client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     client.connect(ADDR)
     print("connected")
 
