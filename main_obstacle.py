@@ -217,7 +217,7 @@ def run(gyro, ldr, pi):
 
         if pi.read(17) == 0:
             break
-    #code here
+
     while True:
         if pose[0] != parking_path[0][0] or pose[1] != parking_path[0][1]:
             navigation.drive_path_back(parking_path, pose, 200)
