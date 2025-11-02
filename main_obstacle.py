@@ -50,6 +50,46 @@ parking_path = [[400, 1450], [400, 1100]]
 obstacle_outer_paths, obstacle_inner_paths = full_path_from_one_section(outer_one_section, inner_one_section)
 ccw_obstacle_outer_paths, ccw_obstacle_inner_paths = ccw_paths_from_cw(obstacle_outer_paths, obstacle_inner_paths)
 
+def park(gyro):
+    fwd_stop_y = parking_path[1][1]
+    rear_stop_y = parking_path[0][1]
+    x_min = parking_path[0][0] - 15
+    x_max = parking_path[0][0] + 15
+    y_min = 1616 - 15
+    y_max = 1616 + 15
+
+    print(pose)
+
+    prev_time = 0 
+    parking_start_pos_reached = False
+    while True:
+        while pose[1] > rear_stop_y:
+            pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
+            navigation.drive_path_back(parking_path, pose, 200)
+            if (time.time() - prev_time) > 0.5:
+                print(pose)
+                prev_time = time.time()
+            if ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
+                parking_start_pos_reached = True
+                break
+        if parking_start_pos_reached:
+            break    
+
+        while pose[1] < fwd_stop_y:
+            pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
+            navigation.drive_path(parking_path, pose, 200)
+            if (time.time() - prev_time) > 0.5:
+                print(pose)
+                prev_time = time.time()
+            if ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
+                parking_start_pos_reached = True
+                break
+        if parking_start_pos_reached:
+            break    
+
+    drive.drive(0) 
+    drive.steering(0)
+
 def run(gyro, ldr, pi):
     global parking_path, obstacle_inner_paths, obstacle_outer_paths, ccw_obstacle_inner_paths, ccw_obstacle_outer_paths
     client.connect()
@@ -217,13 +257,6 @@ def run(gyro, ldr, pi):
 
         if pi.read(17) == 0:
             break
+    park(gyro)
 
-    while True:
-        if pose[0] != parking_path[0][0] or pose[1] != parking_path[0][1]:
-            navigation.drive_path_back(parking_path, pose, 200)
-            navigation.drive_path(parking_path, pose, 200)
-        else:
-            break
-
-    drive.drive(0) 
-    drive.steering(0)
+    

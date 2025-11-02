@@ -13,7 +13,7 @@ import drive
 import spike
 import navigation
 from estimate_pose import estimate_pose, reset_pose
-import client_raspi as client
+# import client_raspi as client
 
 MM_PER_STEPS = 0.296
 
@@ -29,7 +29,7 @@ HEADING_FILTER_RATIO = 0.01  # 0.1%, if it is too low, heading error will be lar
 #     [[2500, 500], [1000, 500]]
 # ]
 
-parking_path = [[500, 1000], [500, 2000]]
+parking_path = [[375, 1050], [375, 1800]]
 
 cw_paths = [ # clockwise paths for open challenge
     # [[500, 500], [500, 2000]], 
@@ -245,11 +245,49 @@ print("Path augmented")
 path_count = 0
 print('steps', drive.steps)
 reset_pose()  # Reset the pose to the initial state
-stop_t = time.time() + 5
-while time.time() < stop_t:
-    pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS) 
+# stop_t = time.time() + 5
 
-    navigation.drive_path_back(path, pose, 200)
+fwd_stop_y = parking_path[1][1]
+rear_stop_y = parking_path[0][1]
+x_min = parking_path[0][0] - 15
+x_max = parking_path[0][0] + 15
+y_min = 1616 - 15
+y_max = 1616 + 15
+
+print(pose)
+
+prev_time = 0 
+parking_start_pos_reached = False
+while True:
+    while pose[1] > rear_stop_y:
+        pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
+        navigation.drive_path_back(path, pose, 200)
+        if (time.time() - prev_time) > 0.5:
+            print(pose)
+            prev_time = time.time()
+        if ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
+            parking_start_pos_reached = True
+            break
+    if parking_start_pos_reached:
+        break    
+
+    while pose[1] < fwd_stop_y:
+        pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
+        navigation.drive_path(path, pose, 200)
+        if (time.time() - prev_time) > 0.5:
+            print(pose)
+            prev_time = time.time()
+        if ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
+            parking_start_pos_reached = True
+            break
+    if parking_start_pos_reached:
+        break    
+    
+    
+    
+# while pose[1] < fwd_stop_y:
+#     pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
+#     navigation.drive_path(path, pose, 200)
 drive.drive(0)
 print(pose)
 '''
