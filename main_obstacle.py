@@ -50,7 +50,8 @@ parking_path = [[400, 1450], [400, 1100]]
 obstacle_outer_paths, obstacle_inner_paths = full_path_from_one_section(outer_one_section, inner_one_section)
 ccw_obstacle_outer_paths, ccw_obstacle_inner_paths = ccw_paths_from_cw(obstacle_outer_paths, obstacle_inner_paths)
 
-def park(gyro):
+def park(pose, gyro):
+    global parking_path
     fwd_stop_y = parking_path[1][1]
     rear_stop_y = parking_path[0][1]
     x_min = parking_path[0][0] - 15
@@ -86,9 +87,13 @@ def park(gyro):
                 break
         if parking_start_pos_reached:
             break    
-
-    drive.drive(0) 
-    drive.steering(0)
+    # parking
+    # drive.steer_p_back(-135, 0, 200)
+    # while pose[1] > 1350: # tested 
+    #     drive.drive(-200)
+    # drive.steer_p_back(0, -135, 200)
+    # while pose[1] > 1300:
+    #     drive.drive(-200)
 
 def run(gyro, ldr, pi):
     global parking_path, obstacle_inner_paths, obstacle_outer_paths, ccw_obstacle_inner_paths, ccw_obstacle_outer_paths
@@ -257,6 +262,6 @@ def run(gyro, ldr, pi):
 
         if pi.read(17) == 0:
             break
-    park(gyro)
+    park(pose, gyro)
 
     
