@@ -46,7 +46,8 @@ while True:
     # record time period 
     prev_time = time.time()
     while pi.read(17) == 0:
-        curr_time = time.time()
+        pass
+    curr_time = time.time()
 
     time_period = curr_time - prev_time
 

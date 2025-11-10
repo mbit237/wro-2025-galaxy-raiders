@@ -62,7 +62,7 @@ def line(x1, y1, x2, y2, fill="blue", arrow=tk.LAST):
 
 def draw_robot(idx):
     field.create_image((0, 0), image=field_img, anchor=tk.NW)
-    pose, spike_pose, match_spikes = history_data[idx]
+    spike_pose, pose, match_spikes, index, misc = history_data[idx]
     x = pose[0]
     y = pose[1]
     heading = pose[2]
@@ -87,22 +87,26 @@ def draw_robot(idx):
     
 def draw_trail(idx):
     end = 0
+    if len(history_data) > 50:
+        end = len(history_data) - 50
     for i in range(idx, end, -1):
-        pose = history_data[i][0]
+        pose = history_data[i][1]
         x = pose[0]
         y = pose[1]
-        pose = history_data[i-1][0]
+        pose = history_data[i-1][1]
         x2 = pose[0]
         y2 = pose[1]
         line(x, y, x2, y2, fill="magenta", arrow=None)
 
 def draw_trail_spikes(idx):
     end = 0
+    if len(history_data) > 50:
+        end = len(history_data) - 50
     for i in range(idx, end, -1):
-        pose = history_data[i][1]
+        pose = history_data[i][0]
         x = pose[0]
         y = pose[1]
-        pose = history_data[i-1][1]
+        pose = history_data[i-1][0]
         x2 = pose[0]
         y2 = pose[1]
         line(x, y, x2, y2, fill="green", arrow=None)
@@ -112,12 +116,14 @@ def scale_change(v):
 
 def update_data_label(idx):
     global data 
-    pose, spike_pose, match_spikes = history_data[idx]
+    pose, spike_pose, match_spikes, index, misc = history_data[idx]
     data["text"] = "pose: " + str(pose) + '\n'
     data["text"] += "spike_pose: " + str(spike_pose) + '\n'
     data["text"] += "match_spikes: " + '\n'
     for match_spike in match_spikes:
         data["text"] += "\t" + str(match_spike) + '\n'
+    data["text"] += "idx: " + str(index) + '\n'
+    data["text"] += "misc: " + str(misc)
 
 # widgets 
 
@@ -172,9 +178,9 @@ def socket_connect():
                             conn = None
                         else:
                             # print(message, type(message))
-                            spike_pose, merged_pose, match_spikes = message
+                            spike_pose, merged_pose, match_spikes, idx, misc = message
                             print(history_data)
-                            history_data.append([spike_pose, merged_pose, match_spikes])
+                            history_data.append([spike_pose, merged_pose, match_spikes, idx, misc])
 
                             slider.config(to=len(history_data)-1)
 
