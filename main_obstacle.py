@@ -94,7 +94,7 @@ def park(pose, gyro):
             drive.steering(0)
             print("parking starting pos reached")
             break    
-
+'''
     # parking 
     # part 1 turn left, move back
     drive.steering(-45)
@@ -123,6 +123,7 @@ def park(pose, gyro):
     while pose[1] > 1300:
         drive.drive(-200)
     print('parked')
+'''
 
 def run(gyro, ldr, pi):
     global parking_path, obstacle_inner_paths, obstacle_outer_paths, ccw_obstacle_inner_paths, ccw_obstacle_outer_paths
@@ -130,7 +131,7 @@ def run(gyro, ldr, pi):
     spike_pose = None
     merged_pose = None
     matches = None
-    pose = initial_pose(ldr) 
+    pose = initial_pose_obstacle(ldr) 
     stop_y = pose[1] - 50
     print("Initial pose:", pose)
     print("angle_z =", gyro.angle_z())

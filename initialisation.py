@@ -54,7 +54,7 @@ def identify_closer_spikes(measurements):
         curr_d = measurements[d][1]
         next_d = measurements[(d+1) % len(measurements)][1] 
         #check if the difference between the previous and the current is signifcantly smaller/bigger than the difference between current and next
-        if (prev_d - curr_d > 300 or next_d - curr_d > 300) and (curr_d > 200):
+        if (prev_d - curr_d > 300 or next_d - curr_d > 300) and (curr_d > 250):
             if 250 < measurements[d][1] < 1500:
                 closer_spikes.append(measurements[d])  
     
@@ -97,6 +97,43 @@ def initial_pose(ldr):
                 print("right side", "x:", x, "y:", y, "fwd_dist:", fwd_dist, "rear_dist:", rear_dist)
                 return [x, y, 90]
 
+def initial_pose_obstacle(ldr):
+    # forward + backward dist, left + right dist, gyro_z
+    # client.send()
+    fwd_dist = get_distance(ldr, 0)
+    left_dist = get_distance(ldr, 90)
+    rear_dist = get_distance(ldr, 180)
+    right_dist = get_distance(ldr, 270)
+
+    NE_angle = get_distance(ldr, 330)
+    SE_angle = get_distance(ldr, 210)
+    print('dist at 330deg:', NE_angle, 'dist at 210deg:', SE_angle)
+    #robot is on left side
+    vote = 0
+    while True:
+        if ldr.update():
+            if (NE_angle > 1750 and SE_angle > 1450) or (NE_angle > 1750 or SE_angle > 1450):
+                vote -= 1
+            else:
+                vote += 1
+            print('votes:', vote)
+            if vote <= -10: # left side
+                x = (left_dist)
+                if fwd_dist + rear_dist > 3500:
+                    y = 3000 - fwd_dist
+                else:
+                    y = ((3000 - fwd_dist) + rear_dist) / 2
+                print("left side", "x:", x, "y:", y, "fwd_dist:", fwd_dist, "rear_dist:", rear_dist)
+                return [x, y, 90]
+            if vote >= 10: # right side
+                x = ((1000 - right_dist)) + 2000
+                if fwd_dist + rear_dist > 3500:
+                    y = 3000 - fwd_dist
+                else:
+                    y = ((3000 - fwd_dist) + rear_dist) / 2
+                print("right side", "x:", x, "y:", y, "fwd_dist:", fwd_dist, "rear_dist:", rear_dist)
+                return [x, y, 90]
+            
 def calc_position_error(matches):
     if not matches:  # Handle empty matches list
         return [0, 0]
