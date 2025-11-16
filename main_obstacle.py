@@ -102,28 +102,25 @@ def park(pose, gyro):
     
     while pose[1] > 1350:
         pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
-        pass
-
-    
-    while pose[1] > 4456:
-        estimate_pose()
-        drive.steer_p_back(-135, pose[2], 200)
-
 
     # part 2 straight, move back
+    drive.steering(0)
+    drive.drive(-200)
 
+    while pose[1] > 1200:
+        pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
 
     # part 3 turn right, move back
+    drive.steering(45)
+    drive.drive(200)
 
+    while pose[1] < 1456:
+        pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
 
-    drive.steer_p_back(-135, 0, 200)
-    while pose[1] > 1350: # tested 
-        drive.drive(-200)
-    drive.steer_p_back(0, -135, 200)
-    while pose[1] > 1300:
-        drive.drive(-200)
-    print('parked')
-'''
+    drive.steering(0)
+    drive.drive(0)
+        
+    print("parked")
 
 def run(gyro, ldr, pi):
     global parking_path, obstacle_inner_paths, obstacle_outer_paths, ccw_obstacle_inner_paths, ccw_obstacle_outer_paths
