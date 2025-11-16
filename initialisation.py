@@ -1,4 +1,5 @@
 import math
+import client_raspi
 
 def full_path_from_one_section(outer_one_section, inner_one_section):
     obstacle_inner_paths = inner_one_section
@@ -54,12 +55,14 @@ def identify_closer_spikes(measurements):
         next_d = measurements[(d+1) % len(measurements)][1] 
         #check if the difference between the previous and the current is signifcantly smaller/bigger than the difference between current and next
         if (prev_d - curr_d > 300 or next_d - curr_d > 300) and (curr_d > 200):
-                closer_spikes.append(measurements[d])
+            if 250 < measurements[d][1] < 1500:
+                closer_spikes.append(measurements[d])  
     
     return closer_spikes
 
 def initial_pose(ldr):
     # forward + backward dist, left + right dist, gyro_z
+    # client.send()
     fwd_dist = get_distance(ldr, 0)
     left_dist = get_distance(ldr, 90)
     rear_dist = get_distance(ldr, 180)
