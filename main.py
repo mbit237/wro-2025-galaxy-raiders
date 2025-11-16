@@ -47,7 +47,7 @@ while True:
     prev_time = time.time()
     while pi.read(17) == 0:
         pass
-    curr_time = time.time() 
+    curr_time = time.time()
 
     time_period = curr_time - prev_time
 
