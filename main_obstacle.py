@@ -94,7 +94,7 @@ def park(pose, gyro):
             drive.steering(0)
             print("parking starting pos reached")
             break    
-'''
+
     # parking 
     # part 1 turn left, move back
     drive.steering(-45)
