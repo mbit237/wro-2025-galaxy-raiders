@@ -30,9 +30,9 @@ ldr = coind4.CoinD4()
 ldr.start()
 print("Lidar started")
 
-gyro = Gyro() 
-gyro.calibration() # keep here for now
-print("Gyro calibrated")
+gyro = Gyro()
+# gyro.calibration() # keep here for now
+# print("Gyro calibrated")
 
 while True:
     print("wait for button")
@@ -46,26 +46,49 @@ while True:
     # record time period 
     prev_time = time.time()
     while pi.read(17) == 0:
-        curr_time = time.time()
+        pass
+    curr_time = time.time() 
 
     time_period = curr_time - prev_time
 
+    # fwd_dist = get_distance(ldr, 0)
+    # left_dist = get_distance(ldr, 90)
+    # rear_dist = get_distance(ldr, 180)
+    # right_dist = get_distance(ldr, 270)
+    # print(fwd_dist, left_dist, rear_dist, right_dist)
+     
     # short -- obstacle 
     if time_period < 3:
         print("short (obstacle)")
+        if gyro.load_calibration() is not None: # file not empty
+            print("gyro calibration loaded")
+        else:
+            gyro.calibration()
+            gyro.save_calibration() # save new gyro calibration to file
+            print("gyro calibrated and saved")
         main_obstacle.run(gyro, ldr, pi)
         time.sleep(2)
     # long -- open 
     elif time_period < 5:
         print("long (open)")
+        if gyro.load_calibration() is not None: # file not empty
+            print("gyro calibration loaded")
+        else:
+            gyro.calibration()
+            gyro.save_calibration() # save new gyro calibration to file
+            print("gyro calibrated and saved")
         main_open.run(gyro, ldr, pi)
         time.sleep(2)
     # long long -- calibrate gyro 
     else:
         print("long long (gyro)")
-        time.sleep(1)
+        # time.sleep(1)
+        # if gyro.load_calibration() is not None: # file not empty
+        #     print("gyro calibration loaded")
+        # else:
         gyro.calibration()
-        print("Gyro calibrated")
+        gyro.save_calibration() # save new gyro calibration to file
+        print("gyro calibrated and saved")
 
 
 

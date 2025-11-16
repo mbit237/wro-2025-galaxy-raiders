@@ -82,7 +82,7 @@ def identify_spikes(measurements):
         if prev_d < 250 or next_d < 250 or curr_d < 250:  # if previous or next distance is too small, skip this measurement
             continue
         if abs((prev_d - curr_d) + (next_d - curr_d)) > M_THRESHOLD:
-            if 100 < measurements[d][1] < 1500:
+            if 250 < measurements[d][1] < 1500:
                 spikes.append(measurements[d])  
             
     return spikes

@@ -38,11 +38,18 @@ class Gyro:
             f.write(str(self.error_z))
 
     def load_calibration(self, filename='gyro_calibration.txt'):
-        try:
-            with open(filename, 'r') as f:
-                self.error_z = float(f.read())
-        except FileNotFoundError:
-            pass
+        with open(filename, 'r') as f:
+            content = f.read()
+            if content == "": # file is empty
+                return None
+            else:
+                self.error_z = float(content)
+                return self.error_z
+        # try:
+        #     with open(filename, 'r') as f:
+        #         self.error_z = float(f.read())
+        # except FileNotFoundError:
+        #     return None
 
     def rate_z(self):
         # return struct.unpack('>h', pi.i2c_read_i2c_block_data(self.handle, 71, 2)[1])[0]
