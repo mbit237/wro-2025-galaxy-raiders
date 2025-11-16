@@ -128,7 +128,7 @@ def run(gyro, ldr, pi):
     spike_pose = None
     merged_pose = None
     matches = None
-    pose = initial_pose(ldr) 
+    pose = initial_pose_obstacle(ldr) 
     stop_y = pose[1] - 50
     print("Initial pose:", pose)
     print("angle_z =", gyro.angle_z())
