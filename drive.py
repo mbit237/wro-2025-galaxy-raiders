@@ -1,6 +1,6 @@
 import pigpio
 
-STEER_MAX = 45
+STEER_MAX = 60
 CENTER = 45
 
 #GPIO20, GPIO21
