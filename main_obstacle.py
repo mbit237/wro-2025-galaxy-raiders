@@ -8,7 +8,7 @@ from gyro import Gyro
 import drive
 import spike
 import navigation
-from estimate_pose import estimate_pose, reset_pose, get_lidar_pose
+from estimate_pose import estimate_pose, reset_pose, get_lidar_pose, lidar_update_pose
 # import client_raspi as client
 import rpicam
 from initialisation import *
@@ -71,8 +71,8 @@ def park(ldr, pose, gyro):
     rear_stop_y = parking_path[0][1] #1100
     x_min = parking_path[0][0] - 10
     x_max = parking_path[0][0] + 10
-    y_min = 1700 - 10
-    y_max = 1700 + 10
+    y_min = 1700 - 5
+    y_max = 1700 + 5
 
     print(pose)#1278
     prev_time = time.time()
@@ -108,40 +108,52 @@ def park(ldr, pose, gyro):
             drive.steering(0)
             print("parking starting pos pt 1 reached")
             break 
-    
+
+    stop_time = time.time() + 1
+    while time.time() < stop_time:
+        ldr.update()
+    while ldr.update():
+        pass
+    pose = get_lidar_pose(ldr)
+
+    print('parking starting pos pt 2')
+    parking_start_pos_reached = False
     while True:
-        if ldr.update():
-            lidar_pose = get_lidar_pose(ldr)
-            while lidar_pose[1] < 1700:
-                lidar_pose = get_lidar_pose(ldr)
-                navigation.drive_path(parking_path, lidar_pose, 200)
+        if not ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
+            while pose[1] < 1700:
+                pose = lidar_update_pose(pose, gyro, ldr, MM_PER_STEPS)
+                navigation.drive_path(parking_path, pose, 200)
                 if (time.time() - prev_time) > 0.5:
-                    print(lidar_pose)
+                    print(pose)
                     prev_time = time.time()
-                if ((x_min < lidar_pose[0] < x_max) and (y_min < lidar_pose[1] < y_max) and (87 < lidar_pose[2] < 93)):
+                if ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
                     parking_start_pos_reached = True
                     break
             if parking_start_pos_reached:
                 drive.drive(0)
                 drive.steering(0)
-                print("parking starting pos pt 2 reached")
+                print("parking starting pos pt 2 reached", pose)
                 break
-            while lidar_pose[1] > rear_stop_y:
-                lidar_pose = get_lidar_pose(ldr)
-                navigation.drive_path_back(parking_path, lidar_pose, 200)
+            while pose[1] > rear_stop_y:
+                pose = lidar_update_pose(pose, gyro, ldr, MM_PER_STEPS)
+                navigation.drive_path_back(parking_path, pose, 200)
                 if (time.time() - prev_time) > 0.5:
-                    print(lidar_pose)
+                    print(pose)
                     prev_time = time.time()
-                if ((x_min < lidar_pose[0] < x_max) and (y_min < lidar_pose[1] < y_max) and (87 < lidar_pose[2] < 93)):
+                if ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
                     parking_start_pos_reached = True
                     break
             if parking_start_pos_reached:
                 drive.drive(0)
                 drive.steering(0)
-                print("parking starting pos pt 2 reached")
+                print("parking starting pos pt 2 reached", pose)
                 break 
-    print("FINAL parking start pos reached")
-    '''
+        else:
+            break
+
+    pose = [346.53589045596135, 1788.7217848972355, 89.71008969053936]
+    print("starting to move into parking zone")
+    time.sleep(3)
     # parking 
     # part 1 turn left, move back
     drive.steering(-45)
@@ -206,7 +218,7 @@ def park(ldr, pose, gyro):
     drive.drive(0)
         
     print("parked")
-    '''
+    
     
 def run(gyro, ldr, pi):
     global parking_path, obstacle_inner_paths, obstacle_outer_paths, ccw_obstacle_inner_paths, ccw_obstacle_outer_paths

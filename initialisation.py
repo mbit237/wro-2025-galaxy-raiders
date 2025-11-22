@@ -63,10 +63,23 @@ def identify_closer_spikes(measurements):
 def initial_pose(ldr):
     # forward + backward dist, left + right dist, gyro_z
     # client.send()
-    fwd_dist = get_distance(ldr, 0)
-    left_dist = get_distance(ldr, 90)
-    rear_dist = get_distance(ldr, 180)
-    right_dist = get_distance(ldr, 270)
+    while True:
+        fwd_dist = get_distance(ldr, 0)
+        rear_dist = get_distance(ldr, 180)
+        if 2900 < fwd_dist + rear_dist < 3100:
+            break
+
+    y = ((3000 - fwd_dist) + rear_dist) / 2
+    print('y', y, fwd_dist, rear_dist)
+    
+    while True:
+        left_dist = get_distance(ldr, 90)
+        right_dist = get_distance(ldr, 270)
+        if 900 < fwd_dist + rear_dist < 1100:
+            break
+
+    y = ((3000 - fwd_dist) + rear_dist) / 2
+    print('y', y, fwd_dist, rear_dist)
 
     #robot is on left side
     vote = 0

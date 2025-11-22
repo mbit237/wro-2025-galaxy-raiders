@@ -1,6 +1,7 @@
 import math
 import time
 import drive
+from initialisation import get_distance
 
 LIDAR_WHEEL_DIST = 195
 
@@ -89,11 +90,54 @@ def estimate_pose_old(pose, delta_z, MM_PER_STEPS=0.296):
     return [pose[0] + dx, pose[1] + dy, curr_heading]
 
 def get_lidar_pose(ldr):
+    while True:
+        fwd_dist = get_distance(ldr, 0)
+        rear_dist = get_distance(ldr, 180)
+        if 2900 < fwd_dist + rear_dist < 3100:
+            break
+
+    y = ((3000 - fwd_dist) + rear_dist) / 2
+    print('y', y, fwd_dist, rear_dist)
+    
+    while True:
+        left_dist = get_distance(ldr, 90)
+        right_dist = get_distance(ldr, 270)
+        if 900 < left_dist + right_dist < 1100:
+            break
+
+    x = (left_dist + (1000 - right_dist)) / 2
+    print('x', x, left_dist, right_dist)
+    return [x, y, 90]
+
+def lidar_update_pose(pose, gyro, ldr, MM_PER_STEPS):
+    pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
     if ldr.update():
-        fwd_dist = ldr.get_distance(0)
-        left_dist = ldr.get_distance(90)
-        rear_dist = ldr.get_distance(180)
-        right_dist = ldr.get_distance(270)
-        x = (left_dist + (1000 - right_dist)) / 2
-        y = (rear_dist + (3000 - fwd_dist)) / 2
-        return [x, y, 90]
+        lidar_measurements = ldr.get_measurements()
+        fwd_dist = 0
+        rear_dist = 0
+        left_dist = 0
+        right_dist = 0
+        for m in lidar_measurements:
+            if 1 > m[0] > -1:
+                fwd_dist = m[1]
+        for m in lidar_measurements:
+            if 181 > m[0] > 179:
+                rear_dist = m[1]
+
+        if 2900 < rear_dist + fwd_dist < 3100:
+            pose[1] = ((3000 - fwd_dist) + rear_dist) / 2
+            print('pose[1] updated with lidar')
+        
+        for m in lidar_measurements:
+            if 271 > m[0] > 269:
+                right_dist = m[1]
+        for m in lidar_measurements:
+            if 91 > m[0] > 89:
+                left_dist = m[1]
+
+        if 900 < left_dist + right_dist < 1100:
+            pose[0] = ((1000 - right_dist) + left_dist) / 2
+            print('pose[1] updated with lidar')
+        print(pose, left_dist, right_dist)
+
+    return pose                

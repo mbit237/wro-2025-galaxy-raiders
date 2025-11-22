@@ -8,7 +8,7 @@ from gyro import Gyro
 import drive
 import spike
 import navigation
-from estimate_pose import estimate_pose, reset_pose
+from estimate_pose import estimate_pose, reset_pose, get_lidar_pose, lidar_update_pose
 import client_raspi as client
 from initialisation import *
 import main_open
@@ -33,7 +33,15 @@ print("Lidar started")
 gyro = Gyro()
 # gyro.calibration() # keep here for now
 # print("Gyro calibrated")
+# pose = get_lidar_pose(ldr)
+# prev_time = time.time()
+# while True:
+#     pose = lidar_update_pose(pose, gyro, ldr, 0.296)
+#     if (time.time() - prev_time) > 0.5:
+#         print(pose)
+#         prev_time = time.time()
 
+# foo()
 while True:
     print("wait for button")
     while True:

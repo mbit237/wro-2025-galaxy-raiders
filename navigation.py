@@ -52,12 +52,8 @@ def drive_path_back(path, pose, speed):
     robot_vec = [pose[0] - path[0][0], pose[1] - path[0][1]]
     
     err = dot(path[5], robot_vec) # how far off the robot is (in mm)
-<<<<<<< HEAD
     # corr = err * PATH_GAIN
     corr = 0 
-=======
-    corr = err * PATH_GAIN 
->>>>>>> f11115a978ba737def1f71787f9d1515f3d9319b
     # Limit correction
     if corr > MAX_ANGLE:
         corr = MAX_ANGLE
