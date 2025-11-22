@@ -13,7 +13,7 @@ g_high_V = 255
 #red threshold
 r_low_H = 112
 r_high_H = 138
-r_low_S = 41
+r_low_S = 90
 r_high_S = 255
 r_low_V = 114
 r_high_V = 255
