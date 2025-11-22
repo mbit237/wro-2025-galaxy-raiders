@@ -87,3 +87,13 @@ def estimate_pose_old(pose, delta_z, MM_PER_STEPS=0.296):
     dy = dist_travelled * math.sin(aver_heading / 180 * math.pi) # returns the adjacent
 
     return [pose[0] + dx, pose[1] + dy, curr_heading]
+
+def get_lidar_pose(ldr):
+    if ldr.update():
+        fwd_dist = ldr.get_distance(0)
+        left_dist = ldr.get_distance(90)
+        rear_dist = ldr.get_distance(180)
+        right_dist = ldr.get_distance(270)
+        x = (left_dist + (1000 - right_dist)) / 2
+        y = (rear_dist + (3000 - fwd_dist)) / 2
+        return [x, y, 90]

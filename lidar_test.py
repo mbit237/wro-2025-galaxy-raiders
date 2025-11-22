@@ -226,25 +226,25 @@ print("Gyro calibrated")
     #     closer_spikes = identify_closer_spikes(lidar_measurements)
     #     print(closer_spikes)
 
-pose = initial_pose()
-stop_y = pose[1] - 50
-print("Initial pose:", pose)
-print("angle_z =", gyro.angle_z())
+# pose = initial_pose()
+# stop_y = pose[1] - 50
+# print("Initial pose:", pose)
+# print("angle_z =", gyro.angle_z())
 
-if pose[0] < 1500:
-    paths = cw_paths
-else:
-    paths = ccw_paths
-path = navigation.augment_path(parking_path)
-index = 0
-print("Path augmented")
+# if pose[0] < 1500:
+#     paths = cw_paths
+# else:
+#     paths = ccw_paths
+# path = navigation.augment_path(parking_path)
+# index = 0
+# print("Path augmented")
 
-# pose = [500, 500, 90] # Initial pose for testing
+pose = [90, 1250, 90] # Initial pose for testing
 # time.sleep(2) 
 # count = 0
-path_count = 0
+# path_count = 0
 print('steps', drive.steps)
-reset_pose()  # Reset the pose to the initial state
+# reset_pose()  # Reset the pose to the initial state
 # stop_t = time.time() + 5
 
 fwd_stop_y = parking_path[1][1]
@@ -253,43 +253,46 @@ x_min = parking_path[0][0] - 15
 x_max = parking_path[0][0] + 15
 y_min = 1616 - 15
 y_max = 1616 + 15
+parking_path = navigation.augment_path(parking_path)
 
 print(pose)
 
 prev_time = 0 
 parking_start_pos_reached = False
-while True:
-    while pose[1] > rear_stop_y:
-        pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
-        navigation.drive_path_back(path, pose, 200)
-        if (time.time() - prev_time) > 0.5:
-            print(pose)
-            prev_time = time.time()
-        if ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
-            parking_start_pos_reached = True
-            break
-    if parking_start_pos_reached:
-        break    
 
-    while pose[1] < fwd_stop_y:
-        pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
-        navigation.drive_path(path, pose, 200)
-        if (time.time() - prev_time) > 0.5:
-            print(pose)
-            prev_time = time.time()
-        if ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
-            parking_start_pos_reached = True
-            break
-    if parking_start_pos_reached:
-        break    
-    
-    
-    
-# while pose[1] < fwd_stop_y:
-#     pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
-#     navigation.drive_path(path, pose, 200)
+while True:
+    if ldr.update():
+        fwd_dist = get_distance(0)
+        left_dist = get_distance(90)
+        rear_dist = get_distance(180)
+        right_dist = get_distance(270)
+        x = (left_dist)
+        y = ((3000 - fwd_dist) + rear_dist) / 2
+        print("x:", x, "y:", y)
+
+drive.steering(45)
+drive.drive(-00)
+
+while pose[1] > 1350:
+    pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
+
+# part 2 straight, move back
+drive.steering(0)
+drive.drive(-200)
+
+while pose[1] > 1200:
+    pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
+
+# part 3 turn right, move back
+drive.steering(45)
+drive.drive(-200)
+
+while pose[1] < 1456:
+    pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
+
+drive.steering(0)
 drive.drive(0)
-print(pose)
+print("parked")
 '''
 while True:
     print("left dist:", get_distance(90), "right dist:", get_distance(270))
