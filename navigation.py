@@ -2,7 +2,7 @@ import math
 import drive
 
 PATH_GAIN = -0.2
-MAX_ANGLE = 30
+MAX_ANGLE = 50
 
 def augment_path(path):
     dx = path[1][0] - path[0][0]

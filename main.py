@@ -68,23 +68,27 @@ while True:
     # short -- obstacle 
     if time_period < 3:
         print("short (obstacle)")
-        if gyro.load_calibration() is not None: # file not empty
-            print("gyro calibration loaded")
-        else:
-            gyro.calibration()
-            gyro.save_calibration() # save new gyro calibration to file
-            print("gyro calibrated and saved")
+        # if gyro.load_calibration() is not None: # file not empty
+        #     print("gyro calibration loaded")
+        # else:
+        #     gyro.calibration()
+        #     gyro.save_calibration() # save new gyro calibration to file
+        #     print("gyro calibrated and saved")
+        gyro.calibration()
+        print('gyro calibrated)')
         main_obstacle.run(gyro, ldr, pi)
         time.sleep(2)
     # long -- open 
     elif time_period < 5:
         print("long (open)")
-        if gyro.load_calibration() is not None: # file not empty
-            print("gyro calibration loaded")
-        else:
-            gyro.calibration()
-            gyro.save_calibration() # save new gyro calibration to file
-            print("gyro calibrated and saved")
+        # if gyro.load_calibration() is not None: # file not empty
+        #     print("gyro calibration loaded")
+        # else:
+        #     gyro.calibration()
+        #     gyro.save_calibration() # save new gyro calibration to file
+        #     print("gyro calibrated and saved")
+        gyro.calibration()
+        print('gyro calibrated)')
         main_open.run(gyro, ldr, pi)
         time.sleep(2)
     # long long -- calibrate gyro 
