@@ -26,9 +26,9 @@ outer_one_section = [
 [[200, 1500], [200, 2000]], # [[200, 1500], [200, 1950]],
 
 # turning point #1
-[[200, 2000], [550, 2300]], # [[200, 2000], [600, 2200]],
+[[200, 2000], [450, 2150.67]], # [[200, 2000], [600, 2200]],
 # check colour
-[[650, 2400], [650, 2425]], # [[700, 2400], [700, 2450]],
+[[650, 2300], [650, 2346.7]], # [[700, 2400], [700, 2450]],
 # check colour
 ]
 
@@ -41,12 +41,12 @@ inner_one_section = [
 #turning point #1
 [[800, 1400], [800, 2000]],
 [[800, 2200], [850, 2200]],
-[[850, 2200], [900, 2200]],
+[[850, 2200], [1000, 2200]], # [[850, 2200], [900, 2200]],
 # check colour
 ]
 
-parking_path = [[335, 1100], [335, 1800]]
-ccw_parking_path = [[2500, 1600], [2850, 1800]]
+parking_path = [[335, 1350], [335, 2000]]
+ccw_parking_path = [[2400, 1600], [2900, 1800]]
 
 obstacle_outer_paths, obstacle_inner_paths = full_path_from_one_section(outer_one_section, inner_one_section)
 ccw_obstacle_outer_paths, ccw_obstacle_inner_paths = ccw_paths_from_cw(obstacle_outer_paths, obstacle_inner_paths)
@@ -162,7 +162,7 @@ def park(ldr, pose, gyro):
     drive.steering(-45)
     drive.drive(-200)
 
-    while pose[1] > 1475:
+    while pose[1] > 1450:
         pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
 
     # part 2 straight, move back
@@ -399,7 +399,7 @@ def run(gyro, ldr, pi):
             data_send_server.append(colour)
             client.send(data_send_server)
             data_send_server = []
-        if path_count >= 60:
+        if path_count >= 20:
             if path_direction == "cw":
                 if pose[1] >= stop_y:
                     print("Reached stopping pose")
