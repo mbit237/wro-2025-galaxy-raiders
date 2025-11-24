@@ -42,6 +42,18 @@ gyro = Gyro()
 #         prev_time = time.time()
 
 # foo()
+
+# print("long (open)")
+# gyro.calibration()
+# print('gyro calibrated)')
+# main_open.run(gyro, ldr, pi)
+
+print("short (obstacle)")
+gyro.calibration()
+print('gyro calibrated)')
+main_obstacle.run(gyro, ldr, pi)
+time.sleep(2)
+
 while True:
     print("wait for button")
     while True:

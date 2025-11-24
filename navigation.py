@@ -2,7 +2,7 @@ import math
 import drive
 
 PATH_GAIN = -0.2
-MAX_ANGLE = 50
+MAX_ANGLE = 30
 
 def augment_path(path):
     dx = path[1][0] - path[0][0]
@@ -42,7 +42,7 @@ def drive_path(path, pose, speed):
         corr = MAX_ANGLE
     elif corr < -MAX_ANGLE:
         corr = -MAX_ANGLE
-
+    
     target_dir += corr 
     # print(f"Target direction: {target_dir}, gyro: {pose}")
     drive.steer_p(target_dir, pose[2], speed)
