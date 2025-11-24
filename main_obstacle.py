@@ -9,7 +9,7 @@ import drive
 import spike
 import navigation
 from estimate_pose import estimate_pose, reset_pose, get_lidar_pose, lidar_update_pose
-# import client_raspi as client
+import client_raspi as client
 import rpicam
 from initialisation import *
 
@@ -28,7 +28,7 @@ outer_one_section = [
 # turning point #1
 [[200, 2000], [550, 2300]], # [[200, 2000], [600, 2200]],
 # check colour
-[[700, 2400], [700, 2450]],
+[[650, 2400], [650, 2425]], # [[700, 2400], [700, 2450]],
 # check colour
 ]
 
@@ -36,7 +36,7 @@ inner_one_section = [
 # straight path #1
 [[800, 1000], [800, 1200]],
 # check colour
-[[800, 1200], [800, 1350]], # [[800, 1200], [800, 1350]],
+[[800, 1200], [800, 1350]], 
 # check colour
 #turning point #1
 [[800, 1400], [800, 2000]],
@@ -237,7 +237,7 @@ def park_ccw(ldr, pose, gyro):
 
 def run(gyro, ldr, pi):
     global parking_path, obstacle_inner_paths, obstacle_outer_paths, ccw_obstacle_inner_paths, ccw_obstacle_outer_paths
-    # client.connect()
+    client.connect()
     spike_pose = None
     merged_pose = None
     matches = None
@@ -397,9 +397,9 @@ def run(gyro, ldr, pi):
         if data_send_server:
             data_send_server.append(index)
             data_send_server.append(colour)
-            # client.send(data_send_server)
+            client.send(data_send_server)
             data_send_server = []
-        if path_count >= 20:
+        if path_count >= 60:
             if path_direction == "cw":
                 if pose[1] >= stop_y:
                     print("Reached stopping pose")
