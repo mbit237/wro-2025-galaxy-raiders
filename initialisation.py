@@ -75,11 +75,11 @@ def initial_pose(ldr):
     while True:
         left_dist = get_distance(ldr, 90)
         right_dist = get_distance(ldr, 270)
-        if 900 < fwd_dist + rear_dist < 1100:
+        if 900 < left_dist + right_dist < 1100:
             break
 
-    y = ((3000 - fwd_dist) + rear_dist) / 2
-    print('y', y, fwd_dist, rear_dist)
+    x = ((1000 - right_dist) + left_dist) / 2
+    print('x', x, right_dist, left_dist)
 
     #robot is on left side
     vote = 0

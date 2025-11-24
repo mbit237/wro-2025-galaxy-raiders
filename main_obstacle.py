@@ -225,8 +225,10 @@ def park(ldr, pose, gyro):
 def park_ccw(ldr, pose, gyro):
     global parking_path
     print(parking_path)
+    print(pose[1])
     while True:
         while pose[1] < parking_path[1][1]:
+            pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
             navigation.drive_path(parking_path, pose, 200)
         print("done with path")
         break
@@ -392,7 +394,6 @@ def run(gyro, ldr, pi):
             print('path', paths[count % len(paths)])
 
         index = count % len(paths)
-        print(path_count)
         if data_send_server:
             data_send_server.append(index)
             data_send_server.append(colour)

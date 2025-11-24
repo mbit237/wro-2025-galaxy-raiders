@@ -30,7 +30,7 @@ ccw_paths = [
 ]
 
 def run(gyro, ldr, pi):
-    client.connect()
+    # client.connect()
     pose = initial_pose(ldr) 
     stop_y = pose[1] - 50
     print("Initial pose:", pose)
@@ -85,7 +85,7 @@ def run(gyro, ldr, pi):
         if count != index:
             path_count += 1
         index = count % 4
-        client.send([spike_pose, merged_pose, matches, index, ""])
+        # client.send([spike_pose, merged_pose, matches, index, ""])
 
         if path_count == 12:
             if pose[1] >= stop_y:
@@ -95,6 +95,6 @@ def run(gyro, ldr, pi):
         
         if pi.read(17) == 0:
             break
-    client.send(client.DISCONNECT_MESSAGE)
+    # client.send(client.DISCONNECT_MESSAGE)
     drive.drive(0)  
     drive.steering(0)  
