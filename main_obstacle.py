@@ -47,6 +47,7 @@ inner_one_section = [
 
 parking_path = [[335, 1350], [335, 2000]]
 ccw_parking_path = [[2400, 1600], [2900, 1800]]
+ccw_parking_path_2 = [[]]
 
 obstacle_outer_paths, obstacle_inner_paths = full_path_from_one_section(outer_one_section, inner_one_section)
 ccw_obstacle_outer_paths, ccw_obstacle_inner_paths = ccw_paths_from_cw(obstacle_outer_paths, obstacle_inner_paths)
@@ -249,14 +250,14 @@ def run(gyro, ldr, pi):
     R_dist = min(get_distance(ldr, 340), get_distance(ldr, 335), get_distance(ldr, 330), get_distance(ldr, 325), get_distance(ldr, 320), get_distance(ldr, 315))
     path_direction = ""
     if pose[0] < 1500:
-        obstacle_outer_paths = navigation.augment_paths(obstacle_outer_paths)
-        obstacle_inner_paths = navigation.augment_paths(obstacle_inner_paths)
+        obstacle_outer_paths = navigation.augment_paths(obstacle_inner_paths)
+        obstacle_inner_paths = navigation.augment_paths(obstacle_outer_paths)
         parking_path = navigation.augment_path(parking_path)
         path_direction = "cw"
         print("clockwise")
     else:
-        obstacle_inner_paths = navigation.augment_paths(ccw_obstacle_inner_paths)
-        obstacle_outer_paths = navigation.augment_paths(ccw_obstacle_outer_paths)
+        obstacle_inner_paths = navigation.augment_paths(ccw_obstacle_outer_paths)
+        obstacle_outer_paths = navigation.augment_paths(ccw_obstacle_inner_paths)
         parking_path = navigation.augment_path(ccw_parking_path)
         path_direction = "ccw"
         print("counter-clockwise")
@@ -274,7 +275,7 @@ def run(gyro, ldr, pi):
     if pose[0] < 1500: #left
         if R_dist < 400:
             colour = rpicam.detect_blob()
-            if colour == "r":
+            if colour == "g":
                 reverse = True
                 print(colour)
                 paths = obstacle_inner_paths
@@ -284,7 +285,7 @@ def run(gyro, ldr, pi):
     else:
         if L_dist < 400:
             colour = rpicam.detect_blob()
-            if colour == "r":
+            if colour == "g":
                 reverse = True
                 print(colour)
                 paths = obstacle_outer_paths
