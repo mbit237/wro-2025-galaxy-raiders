@@ -11,6 +11,7 @@ def connect():
     global client
     PORT = 5050
     SERVER = 'XYs-MacBook-Air.local'
+    # SERVER = 'henry'
     ADDR = (SERVER, PORT)
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
