@@ -54,8 +54,8 @@ def identify_closer_spikes(measurements):
         curr_d = measurements[d][1]
         next_d = measurements[(d+1) % len(measurements)][1] 
         #check if the difference between the previous and the current is signifcantly smaller/bigger than the difference between current and next
-        if (prev_d - curr_d > 300 or next_d - curr_d > 300) and (curr_d > 250):
-            if 250 < measurements[d][1] < 1500:
+        if (prev_d - curr_d > 300 or next_d - curr_d > 300) and (curr_d > 300):
+            if 300 < measurements[d][1] < 1500:
                 closer_spikes.append(measurements[d])  
     
     return closer_spikes
