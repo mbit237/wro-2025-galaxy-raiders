@@ -27,6 +27,8 @@ buf = bytearray(10000)
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 # Disable Nagle's algorithm by setting TCP_NODELAY to 1
 server.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
 server.setblocking(False)
 server.bind(ADDR)
 server.listen()
@@ -142,6 +144,28 @@ data = tk.Label(root, text="Waiting for data", wraplength=500, justify=tk.LEFT)
 data.grid(column=1, row=0, rowspan=2, padx=10, pady=10, sticky="ew") # sticky="ew" allows the label to expand horizontally when window is resized
 # ew -- eastwest
 
+def cleanup_and_exit():
+    global conn, server
+    print("[SHUTDOWN] Closing sockets...")
+
+    try:
+        if conn is not None:
+            try:
+                conn.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+            conn.close()
+            conn = None
+    finally:
+        try:
+            server.close()
+        except OSError:
+            pass
+
+    root.destroy()
+
+root.protocol("WM_DELETE_WINDOW", cleanup_and_exit)
+
 def socket_connect():
     global conn, ptr, msg_length
     if conn is None: # no current connection 
@@ -198,3 +222,8 @@ def socket_connect():
 root.after(1000, socket_connect)
 
 root.mainloop() # run application once it is ready -- blocks
+
+try:
+    root.mainloop()
+except KeyboardInterrupt:
+    cleanup_and_exit()
