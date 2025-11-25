@@ -23,7 +23,7 @@ gyro_calibration_saver.py: saves the gyro calibration readings
 [unused] lds02rr.py: functions for previous lidar, also pareses in each data frame and checks the checksum
 [unused] compass.py: functions for compass module to read its heading, not implemented in current version
 
-**Navigation **
+**Navigation**
 spike.py: functions to match to lidar points to landmarks 
 estimate_pose.py: functions for odometry, which uses wheel rotation and gyro to estimate the robot's position and heading while it is running. New estimate_pose function uses vectors
 drive.py: navigation functions 
@@ -36,7 +36,7 @@ Using camera to identify the position of the red and green blocks to know which 
 rpicam.py: functions for detection of red and green blobs based on HSV thresholds using opencv
 rpicam_calibration.py: tool to calibrate HSV thresholds for different colours with sliders using opencv
 
-**main.py: **
+**main.py:**
 specify the variables and constants: filter ratios for spike and odometry, paths for the different challenges / scenarios 
 get the initial position of the robot by checking the distance away from the walls
 merging the positions derived from odometry and spike using complementary filter 
