@@ -238,7 +238,7 @@ def park_ccw(ldr, pose, gyro):
 
 def run(gyro, ldr, pi):
     global parking_path, obstacle_inner_paths, obstacle_outer_paths, ccw_obstacle_inner_paths, ccw_obstacle_outer_paths
-    client.connect()
+    # client.connect()
     spike_pose = None
     merged_pose = None
     matches = None
@@ -250,8 +250,8 @@ def run(gyro, ldr, pi):
     R_dist = min(get_distance(ldr, 340), get_distance(ldr, 335), get_distance(ldr, 330), get_distance(ldr, 325), get_distance(ldr, 320), get_distance(ldr, 315))
     path_direction = ""
     if pose[0] < 1500:
-        obstacle_outer_paths = navigation.augment_paths(obstacle_inner_paths)
-        obstacle_inner_paths = navigation.augment_paths(obstacle_outer_paths)
+        obstacle_outer_paths = navigation.augment_paths(obstacle_outer_paths)
+        obstacle_inner_paths = navigation.augment_paths(obstacle_inner_paths)
         parking_path = navigation.augment_path(parking_path)
         path_direction = "cw"
         print("clockwise")
@@ -398,7 +398,7 @@ def run(gyro, ldr, pi):
         if data_send_server:
             data_send_server.append(index)
             data_send_server.append(colour)
-            client.send(data_send_server)
+            # client.send(data_send_server)
             data_send_server = []
         if path_count >= 20:
             if path_direction == "cw":

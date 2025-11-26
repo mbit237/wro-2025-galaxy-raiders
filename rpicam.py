@@ -4,10 +4,10 @@ from picamera2 import Picamera2
 
 #green threshold
 g_low_H = 29
-g_high_H = 68
-g_low_S = 47
+g_high_H = 69
+g_low_S = 96
 g_high_S = 255
-g_low_V = 41
+g_low_V = 121
 g_high_V = 255
 
 #red threshold
