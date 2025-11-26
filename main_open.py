@@ -30,7 +30,9 @@ ccw_paths = [
 ]
 
 def run(gyro, ldr, pi):
-    client.connect()
+    # client.connect()
+    while ldr.update():
+        pass
     pose = initial_pose(ldr) 
     stop_y = pose[1] - 50
     print("Initial pose:", pose)
@@ -78,7 +80,7 @@ def run(gyro, ldr, pi):
             # pose = merged_position_pose
             pose = merged_pose
             data_send_server = [spike_pose, merged_pose, matches, None, [angle_error, position_error]]
-            with open("troubleshootingData.txt", "w") as f:
+            with open("/troubleshootingData/troubleshootingData.txt", "w") as f:
                 troubleshoot_data = str(matches) + ", " + str(merged_position_pose) + ", " + str(merged_pose)
                 f.write(troubleshoot_data)
                 
@@ -88,10 +90,10 @@ def run(gyro, ldr, pi):
         index = count % 4
         if data_send_server:
             data_send_server[3] = index
-            client.send(data_send_server)
+            # client.send(data_send_server)
             data_send_server = []
 
-        if path_count == 2:
+        if path_count == 12:
             if pose[1] >= stop_y:
                 print("Reached stopping pose")
                 break
@@ -99,6 +101,6 @@ def run(gyro, ldr, pi):
         
         if pi.read(17) == 0:
             break
-    client.send(client.DISCONNECT_MESSAGE)
+    # client.send(client.DISCONNECT_MESSAGE)
     drive.drive(0)  
     drive.steering(0)  

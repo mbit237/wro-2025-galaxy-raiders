@@ -54,8 +54,8 @@ def identify_closer_spikes(measurements):
         curr_d = measurements[d][1]
         next_d = measurements[(d+1) % len(measurements)][1] 
         #check if the difference between the previous and the current is signifcantly smaller/bigger than the difference between current and next
-        if (prev_d - curr_d > 300 or next_d - curr_d > 300) and (curr_d > 300):
-            if 300 < measurements[d][1] < 1500:
+        if (prev_d - curr_d > 300 or next_d - curr_d > 300):
+            if 300 < measurements[d][1] < 1300:
                 closer_spikes.append(measurements[d])  
     
     return closer_spikes
@@ -66,7 +66,7 @@ def initial_pose(ldr):
     while True:
         fwd_dist = get_distance(ldr, 0)
         rear_dist = get_distance(ldr, 180)
-        if 2900 < fwd_dist + rear_dist < 3100:
+        if (2900 < fwd_dist + rear_dist < 3100) and fwd_dist >= 1000 and rear_dist >= 1000:
             break
 
     y = ((3000 - fwd_dist) + rear_dist) / 2
@@ -118,8 +118,8 @@ def initial_pose_obstacle(ldr):
     rear_dist = get_distance(ldr, 180)
     right_dist = get_distance(ldr, 270)
 
-    NE_angle = get_distance(ldr, 330)
-    SE_angle = get_distance(ldr, 210)
+    NE_angle = get_distance(ldr, 345)
+    SE_angle = get_distance(ldr, 220)
     print('dist at 330deg:', NE_angle, 'dist at 210deg:', SE_angle)
     #robot is on left side
     vote = 0

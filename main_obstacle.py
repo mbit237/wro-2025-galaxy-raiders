@@ -45,12 +45,11 @@ inner_one_section = [
 # check colour
 ]
 
-parking_path = [[335, 1350], [335, 2000]]
+parking_path = [[345, 1350], [345, 2100]]
 ccw_parking_path = [[2400, 1600], [2900, 1800]]
-ccw_parking_path_2 = [[]]
 
-obstacle_outer_paths, obstacle_inner_paths = full_path_from_one_section(outer_one_section, inner_one_section)
-ccw_obstacle_outer_paths, ccw_obstacle_inner_paths = ccw_paths_from_cw(obstacle_outer_paths, obstacle_inner_paths)
+unaugmented_obstacle_outer_paths, unaugmented_obstacle_inner_paths = full_path_from_one_section(outer_one_section, inner_one_section)
+unaugmented_ccw_obstacle_outer_paths, unaugmented_ccw_obstacle_inner_paths = ccw_paths_from_cw(unaugmented_obstacle_outer_paths, unaugmented_obstacle_inner_paths)
 
 def exit_parking_lot():
     fwd_dist = get_distance(20)
@@ -69,19 +68,24 @@ def park(ldr, pose, gyro):
     # need to add for opposite side
     global parking_path
     print("starting parking procedure")
-    fwd_stop_y = parking_path[1][1] #1450
-    rear_stop_y = parking_path[0][1] #1100
-    x_min = parking_path[0][0] - 10
-    x_max = parking_path[0][0] + 10
-    y_min = 1710 - 5
-    y_max = 1710 + 5
+    reverse_count = 0
+    fwd_stop_y = parking_path[1][1]
+    rear_stop_y = 1800
+    x_min_2 = parking_path[0][0] - 15 #second alignment
+    x_max_2 = parking_path[0][0] + 15 #second alignment
+    x_min = x_min_2 - 15 #first alignment
+    x_max = x_max_2 - 15 #first alignment
+    y_min = 1655 - 5
+    y_max = 1655 + 5
 
-    print(pose)#1278
+    print(pose)
     prev_time = time.time()
     parking_start_pos_reached = False
-
+    
     while True:
-        while pose[1] < fwd_stop_y:
+        if reverse_count >= 3:
+                rear_stop_y = parking_path[0][1]
+        while pose[1] < fwd_stop_y: #forward
             pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
             navigation.drive_path(parking_path, pose, 200)
             if (time.time() - prev_time) > 0.5:
@@ -96,9 +100,10 @@ def park(ldr, pose, gyro):
             print("parking starting pos pt 1 reached")
             break    
 
-        while pose[1] > rear_stop_y:
+        while pose[1] > rear_stop_y: #backward
             pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
             navigation.drive_path_back(parking_path, pose, 200)
+            reverse_count += 1
             if (time.time() - prev_time) > 0.5:
                 print(pose)
                 prev_time = time.time()
@@ -121,14 +126,14 @@ def park(ldr, pose, gyro):
     print('parking starting pos pt 2')
     parking_start_pos_reached = False
     while True:
-        if not ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
+        if not ((x_min_2 < pose[0] < x_max_2) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
             while pose[1] < fwd_stop_y:
                 pose = lidar_update_pose(pose, gyro, ldr, MM_PER_STEPS)
                 navigation.drive_path(parking_path, pose, 200)
                 if (time.time() - prev_time) > 0.5:
                     print(pose)
                     prev_time = time.time()
-                if ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
+                if ((x_min_2 < pose[0] < x_max_2) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
                     parking_start_pos_reached = True
                     break
             if parking_start_pos_reached:
@@ -142,7 +147,7 @@ def park(ldr, pose, gyro):
                 if (time.time() - prev_time) > 0.5:
                     print(pose)
                     prev_time = time.time()
-                if ((x_min < pose[0] < x_max) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
+                if ((x_min_2 < pose[0] < x_max_2) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
                     parking_start_pos_reached = True
                     break
             if parking_start_pos_reached:
@@ -228,7 +233,7 @@ def park_ccw(ldr, pose, gyro):
     print(parking_path)
     print(pose[1])
     while True:
-        while pose[1] < parking_path[1][1]:
+        while pose[1] < ccw_parking_path[1][1]:
             pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
             navigation.drive_path(parking_path, pose, 200)
         print("done with path")
@@ -239,25 +244,28 @@ def park_ccw(ldr, pose, gyro):
 def run(gyro, ldr, pi):
     global parking_path, obstacle_inner_paths, obstacle_outer_paths, ccw_obstacle_inner_paths, ccw_obstacle_outer_paths
     # client.connect()
+    while ldr.update():
+        pass
     spike_pose = None
     merged_pose = None
     matches = None
     pose = initial_pose_obstacle(ldr) 
-    stop_y = pose[1] - 50
+    #stop_y = pose[1] - 50 (orig)
+    stop_y = 1510
     print("Initial pose:", pose)
     print("angle_z =", gyro.angle_z())
     L_dist = min(get_distance(ldr, 20), get_distance(ldr, 25), get_distance(ldr, 30), get_distance(ldr, 35), get_distance(ldr, 40), get_distance(ldr, 45))
     R_dist = min(get_distance(ldr, 340), get_distance(ldr, 335), get_distance(ldr, 330), get_distance(ldr, 325), get_distance(ldr, 320), get_distance(ldr, 315))
     path_direction = ""
-    if pose[0] < 1500:
-        obstacle_outer_paths = navigation.augment_paths(obstacle_outer_paths)
-        obstacle_inner_paths = navigation.augment_paths(obstacle_inner_paths)
+    if pose[0] < 1500: #left
+        obstacle_outer_paths = navigation.augment_paths(unaugmented_obstacle_inner_paths)
+        obstacle_inner_paths = navigation.augment_paths(unaugmented_obstacle_outer_paths)
         parking_path = navigation.augment_path(parking_path)
         path_direction = "cw"
         print("clockwise")
-    else:
-        obstacle_inner_paths = navigation.augment_paths(ccw_obstacle_outer_paths)
-        obstacle_outer_paths = navigation.augment_paths(ccw_obstacle_inner_paths)
+    else: #right
+        obstacle_inner_paths = navigation.augment_paths(unaugmented_ccw_obstacle_inner_paths)
+        obstacle_outer_paths = navigation.augment_paths(unaugmented_ccw_obstacle_outer_paths)
         parking_path = navigation.augment_path(ccw_parking_path)
         path_direction = "ccw"
         print("counter-clockwise")
@@ -275,23 +283,23 @@ def run(gyro, ldr, pi):
     if pose[0] < 1500: #left
         if R_dist < 400:
             colour = rpicam.detect_blob()
-            if colour == "g":
+            if colour == "r":
                 reverse = True
                 print(colour)
-                paths = obstacle_inner_paths
+                paths = obstacle_outer_paths
             else:
                 print(colour)
-                paths = obstacle_outer_paths
-    else:
+                paths = obstacle_inner_paths
+    else: #right
         if L_dist < 400:
             colour = rpicam.detect_blob()
             if colour == "g":
                 reverse = True
                 print(colour)
-                paths = obstacle_outer_paths
+                paths = obstacle_inner_paths
             else:
                 print(colour)
-                paths = obstacle_inner_paths
+                paths = obstacle_outer_paths
 
     while reverse:
         pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
@@ -389,9 +397,9 @@ def run(gyro, ldr, pi):
                 colour = rpicam.detect_blob()
                 print("colour", colour)
                 if colour == 'r':
-                    paths = obstacle_inner_paths
-                elif colour == 'g':
                     paths = obstacle_outer_paths
+                elif colour == 'g':
+                    paths = obstacle_inner_paths
             print('path', paths[count % len(paths)])
 
         index = count % len(paths)

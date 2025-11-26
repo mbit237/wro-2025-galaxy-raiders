@@ -2,18 +2,34 @@ import cv2
 from picamera2 import Picamera2
 
 
-#green threshold
+# COMPETITION GREEN threshold
+# g_low_H = 29
+# g_high_H = 69
+# g_low_S = 96
+# g_high_S = 255
+# g_low_V = 121
+# g_high_V = 255
+
+# STUDIO GREEN threshold
 g_low_H = 29
-g_high_H = 69
-g_low_S = 96
+g_high_H = 68
+g_low_S = 47
 g_high_S = 255
-g_low_V = 121
+g_low_V = 41
 g_high_V = 255
 
-#red threshold
+#COMPETITION RED threshold
+# r_low_H = 112
+# r_high_H = 138
+# r_low_S = 90
+# r_high_S = 255
+# r_low_V = 114
+# r_high_V = 255
+
+#STUDIO GREEN threshold
 r_low_H = 112
 r_high_H = 138
-r_low_S = 90
+r_low_S = 122
 r_high_S = 255
 r_low_V = 114
 r_high_V = 255
@@ -90,18 +106,26 @@ def detect_blob():
 #     if frame is None:
 #         break
 
+#     frame = frame[63:-80,0:-1]
 #     frame = cv2.GaussianBlur(frame, (5,5), 0)
-#     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-#     frame = cv2.inRange(frame, (low_H, low_S, low_V), (high_H, high_S, high_V))
-#     keypoints = detector.detect(frame) # Detects keypoints. Each keypoint will contain the x,y position, and size.
+#     hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+#     g_frame = cv2.inRange(hsv_frame, (g_low_H, g_low_S, g_low_V), (g_high_H, g_high_S, g_high_V))
+#     keypoints = detector.detect(g_frame) # Detects keypoints. Each keypoint will contain the x,y position, and size.
 #     largest_size = 0
-#     largest_keypoint = None
+#     g_largest_keypoint = None
 #     for keypoint in keypoints:
 #         if keypoint.size > largest_size:
 #             largest_size = keypoint.size
-#             largest_keypoint = keypoint
-#     if largest_keypoint:
-#         print(largest_keypoint.pt)
+#             g_largest_keypoint = keypoint
+    
+#     r_frame = cv2.inRange(hsv_frame, (r_low_H, r_low_S, r_low_V), (r_high_H, r_high_S, r_high_V))
+#     keypoints = detector.detect(r_frame) # Detects keypoints. Each keypoint will contain the x,y position, and size.
+#     largest_size = 0
+#     r_largest_keypoint = None
+#     for keypoint in keypoints:
+#         if keypoint.size > largest_size:
+#             largest_size = keypoint.size
+#             r_largest_keypoint = keypoint
 
 #     frame = cv2.drawKeypoints(frame, keypoints, 0, (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 

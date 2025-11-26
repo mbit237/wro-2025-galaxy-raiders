@@ -28,6 +28,8 @@ print('steps', drive.steps)
 
 ldr = coind4.CoinD4() 
 ldr.start()
+while ldr.update():
+    pass
 print("Lidar started")
 
 gyro = Gyro()
@@ -78,7 +80,7 @@ while True:
     # print(fwd_dist, left_dist, rear_dist, right_dist)
      
     # short -- obstacle 
-    if time_period < 3:
+    if time_period < 2:
         print("short (obstacle)")
         # if gyro.load_calibration() is not None: # file not empty
         #     print("gyro calibration loaded")
@@ -90,8 +92,11 @@ while True:
         print('gyro calibrated)')
         main_obstacle.run(gyro, ldr, pi)
         time.sleep(2)
+        while ldr.update():
+            pass
+
     # long -- open 
-    elif time_period < 5:
+    elif time_period < 6:
         print("long (open)")
         # if gyro.load_calibration() is not None: # file not empty
         #     print("gyro calibration loaded")
@@ -103,6 +108,8 @@ while True:
         print('gyro calibrated)')
         main_open.run(gyro, ldr, pi)
         time.sleep(2)
+        while ldr.update():
+            pass
     # long long -- calibrate gyro 
     else:
         print("long long (gyro)")
@@ -113,5 +120,7 @@ while True:
         gyro.calibration()
         gyro.save_calibration() # save new gyro calibration to file
         print("gyro calibrated and saved")
+        while ldr.update():
+            pass
 
 
