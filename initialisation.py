@@ -54,9 +54,11 @@ def identify_closer_spikes(measurements):
         curr_d = measurements[d][1]
         next_d = measurements[(d+1) % len(measurements)][1] 
         #check if the difference between the previous and the current is signifcantly smaller/bigger than the difference between current and next
-        if (prev_d - curr_d > 300 or next_d - curr_d > 300):
-            if 300 < measurements[d][1] < 1300:
+        #if abs((prev_d - curr_d) + (next_d - curr_d)) > 400:
+        if (prev_d - curr_d > 300 or next_d - curr_d > 300) and (curr_d > 300):
+            if 300 < measurements[d][1] < 1500:
                 closer_spikes.append(measurements[d])  
+
     
     return closer_spikes
 
@@ -71,15 +73,17 @@ def initial_pose(ldr):
 
     y = ((3000 - fwd_dist) + rear_dist) / 2
     print('y', y, fwd_dist, rear_dist)
-    
-    while True:
-        left_dist = get_distance(ldr, 90)
-        right_dist = get_distance(ldr, 270)
-        if 900 < left_dist + right_dist < 1100:
-            break
 
-    x = ((1000 - right_dist) + left_dist) / 2
-    print('x', x, right_dist, left_dist)
+    left_dist = get_distance(ldr, 90)
+    right_dist = get_distance(ldr, 270)
+    
+    # while True:
+    #     left_dist = get_distance(ldr, 90)
+    #     right_dist = get_distance(ldr, 270)
+    #     if 900 < left_dist + right_dist < 1100:
+    #         break
+    
+    # print('x', x, right_dist, left_dist)
 
     #robot is on left side
     vote = 0

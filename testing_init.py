@@ -5,5 +5,5 @@ ldr = coind4.CoinD4() #lidar initialise
 ldr.start()
 
 while True:
-    pose = initialisation.initial_pose_obstacle(ldr)
+    pose = initialisation.initial_pose(ldr)
     print("Initial pose:", pose)

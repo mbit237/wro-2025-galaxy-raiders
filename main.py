@@ -91,36 +91,37 @@ while True:
         gyro.calibration()
         print('gyro calibrated)')
         main_obstacle.run(gyro, ldr, pi)
+        # main_open.run(gyro, ldr, pi)
         time.sleep(2)
         while ldr.update():
             pass
 
     # long -- open 
-    elif time_period < 6:
-        print("long (open)")
-        # if gyro.load_calibration() is not None: # file not empty
-        #     print("gyro calibration loaded")
-        # else:
-        #     gyro.calibration()
-        #     gyro.save_calibration() # save new gyro calibration to file
-        #     print("gyro calibrated and saved")
-        gyro.calibration()
-        print('gyro calibrated)')
-        main_open.run(gyro, ldr, pi)
-        time.sleep(2)
-        while ldr.update():
-            pass
-    # long long -- calibrate gyro 
-    else:
-        print("long long (gyro)")
-        # time.sleep(1)
-        # if gyro.load_calibration() is not None: # file not empty
-        #     print("gyro calibration loaded")
-        # else:
-        gyro.calibration()
-        gyro.save_calibration() # save new gyro calibration to file
-        print("gyro calibrated and saved")
-        while ldr.update():
-            pass
+    # elif time_period < 6:
+    #     print("long (open)")
+    #     # if gyro.load_calibration() is not None: # file not empty
+    #     #     print("gyro calibration loaded")
+    #     # else:
+    #     #     gyro.calibration()
+    #     #     gyro.save_calibration() # save new gyro calibration to file
+    #     #     print("gyro calibrated and saved")
+    #     gyro.calibration()
+    #     print('gyro calibrated)')
+    #     main_open.run(gyro, ldr, pi)
+    #     time.sleep(2)
+    #     while ldr.update():
+    #         pass
+    # # long long -- calibrate gyro 
+    # else:
+    #     print("long long (gyro)")
+    #     # time.sleep(1)
+    #     # if gyro.load_calibration() is not None: # file not empty
+    #     #     print("gyro calibration loaded")
+    #     # else:
+    #     gyro.calibration()
+    #     gyro.save_calibration() # save new gyro calibration to file
+    #     print("gyro calibrated and saved")
+    #     while ldr.update():
+    #         pass
 
 

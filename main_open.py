@@ -80,7 +80,7 @@ def run(gyro, ldr, pi):
             # pose = merged_position_pose
             pose = merged_pose
             data_send_server = [spike_pose, merged_pose, matches, None, [angle_error, position_error]]
-            with open("/troubleshootingData/troubleshootingData.txt", "w") as f:
+            with open("troubleshootingData.txt", "w") as f:
                 troubleshoot_data = str(matches) + ", " + str(merged_position_pose) + ", " + str(merged_pose)
                 f.write(troubleshoot_data)
                 

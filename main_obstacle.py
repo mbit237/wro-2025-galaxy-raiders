@@ -45,7 +45,7 @@ inner_one_section = [
 # check colour
 ]
 
-parking_path = [[345, 1350], [345, 2100]]
+parking_path = [[375, 1350], [375, 2100]]
 ccw_parking_path = [[2400, 1600], [2900, 1800]]
 
 unaugmented_obstacle_outer_paths, unaugmented_obstacle_inner_paths = full_path_from_one_section(outer_one_section, inner_one_section)
@@ -63,6 +63,7 @@ def exit_parking_lot():
     # drive.drive(200) # until reached y:1500
     # start following path
     print('exited parking lot')
+    # break
 
 def park(ldr, pose, gyro):
     # need to add for opposite side
@@ -75,15 +76,15 @@ def park(ldr, pose, gyro):
     x_max_2 = parking_path[0][0] + 15 #second alignment
     x_min = x_min_2 - 15 #first alignment
     x_max = x_max_2 - 15 #first alignment
-    y_min = 1655 - 5
-    y_max = 1655 + 5
+    y_min = 1690 - 5
+    y_max = 1690 + 5
 
     print(pose)
     prev_time = time.time()
     parking_start_pos_reached = False
     
     while True:
-        if reverse_count >= 3:
+        if reverse_count >= 4:
                 rear_stop_y = parking_path[0][1]
         while pose[1] < fwd_stop_y: #forward
             pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
@@ -165,7 +166,7 @@ def park(ldr, pose, gyro):
     time.sleep(3)
     # parking 
     # part 1 turn left, move back
-    drive.steering(-45)
+    drive.steering(-40)
     drive.drive(-200)
 
     while pose[1] > 1450:
@@ -251,7 +252,7 @@ def run(gyro, ldr, pi):
     matches = None
     pose = initial_pose_obstacle(ldr) 
     #stop_y = pose[1] - 50 (orig)
-    stop_y = 1510
+    stop_y = 1450
     print("Initial pose:", pose)
     print("angle_z =", gyro.angle_z())
     L_dist = min(get_distance(ldr, 20), get_distance(ldr, 25), get_distance(ldr, 30), get_distance(ldr, 35), get_distance(ldr, 40), get_distance(ldr, 45))
@@ -408,7 +409,7 @@ def run(gyro, ldr, pi):
             data_send_server.append(colour)
             # client.send(data_send_server)
             data_send_server = []
-        if path_count >= 20:
+        if path_count >= 60:
             if path_direction == "cw":
                 if pose[1] >= stop_y:
                     print("Reached stopping pose")
