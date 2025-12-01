@@ -45,11 +45,17 @@ inner_one_section = [
 # check colour
 ]
 
-parking_path = [[375, 1350], [375, 2100]]
+parking_path = [[375, 1350], [375, 2000]]
 ccw_parking_path = [[2400, 1600], [2900, 1800]]
 
 unaugmented_obstacle_outer_paths, unaugmented_obstacle_inner_paths = full_path_from_one_section(outer_one_section, inner_one_section)
 unaugmented_ccw_obstacle_outer_paths, unaugmented_ccw_obstacle_inner_paths = ccw_paths_from_cw(unaugmented_obstacle_outer_paths, unaugmented_obstacle_inner_paths)
+
+unaugmented_obstacle_outer_paths[0] = [[400, 1000], [400, 1200]]
+unaugmented_obstacle_outer_paths[1] = [[400, 1200], [400, 1350]]
+unaugmented_obstacle_outer_paths[19] = [[700, 700], [669, 700]]
+unaugmented_ccw_obstacle_outer_paths[1] = [[2600, 1200], [2600, 1350]]
+unaugmented_ccw_obstacle_outer_paths[2] = [[2600, 1500], [2600, 2000]]
 
 def exit_parking_lot():
     fwd_dist = get_distance(20)
@@ -76,8 +82,10 @@ def park(ldr, pose, gyro):
     x_max_2 = parking_path[0][0] + 15 #second alignment
     x_min = x_min_2 - 15 #first alignment
     x_max = x_max_2 - 15 #first alignment
-    y_min = 1690 - 5
-    y_max = 1690 + 5
+    y_min_2 = 1690 - 5
+    y_max_2 = 1690 + 5
+    y_min = y_min_2 - 10
+    y_max = y_max_2 + 10
 
     print(pose)
     prev_time = time.time()
@@ -88,7 +96,7 @@ def park(ldr, pose, gyro):
                 rear_stop_y = parking_path[0][1]
         while pose[1] < fwd_stop_y: #forward
             pose = estimate_pose(pose, gyro.delta_z(), MM_PER_STEPS)
-            navigation.drive_path(parking_path, pose, 200)
+            navigation.drive_path(parking_path, pose, 175)
             if (time.time() - prev_time) > 0.5:
                 print(pose)
                 prev_time = time.time()
@@ -127,14 +135,14 @@ def park(ldr, pose, gyro):
     print('parking starting pos pt 2')
     parking_start_pos_reached = False
     while True:
-        if not ((x_min_2 < pose[0] < x_max_2) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
+        if not ((x_min_2 < pose[0] < x_max_2) and (y_min_2 < pose[1] < y_max_2) and (87 < pose[2] < 93)):
             while pose[1] < fwd_stop_y:
                 pose = lidar_update_pose(pose, gyro, ldr, MM_PER_STEPS)
                 navigation.drive_path(parking_path, pose, 200)
                 if (time.time() - prev_time) > 0.5:
                     print(pose)
                     prev_time = time.time()
-                if ((x_min_2 < pose[0] < x_max_2) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
+                if ((x_min_2 < pose[0] < x_max_2) and (y_min_2 < pose[1] < y_max_2) and (87 < pose[2] < 93)):
                     parking_start_pos_reached = True
                     break
             if parking_start_pos_reached:
@@ -148,7 +156,7 @@ def park(ldr, pose, gyro):
                 if (time.time() - prev_time) > 0.5:
                     print(pose)
                     prev_time = time.time()
-                if ((x_min_2 < pose[0] < x_max_2) and (y_min < pose[1] < y_max) and (87 < pose[2] < 93)):
+                if ((x_min_2 < pose[0] < x_max_2) and (y_min_2 < pose[1] < y_max_2) and (87 < pose[2] < 93)):
                     parking_start_pos_reached = True
                     break
             if parking_start_pos_reached:
